@@ -101,13 +101,6 @@ body {
   gap: 10px;
 }
 
-.circular-timer {
-  width: 250px;
-  height: 250px;
-  margin-bottom: 20px;
-  transition: width 1s linear;
-}
-
 .modal {
   position: fixed;
   top: 0;
