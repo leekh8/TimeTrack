@@ -5,7 +5,7 @@ import "./App.css";
 import SEO from "./components/SEO";
 import Timer from "./components/Timer";
 
-const TaskList = lazy(() => import("./components/TaskLisct"));
+const TaskList = lazy(() => import("./components/TaskList"));
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -38,7 +38,12 @@ function App() {
 
       <div className={`App ${darkMode ? "dark-mode" : ""}`}>
         <header className="header">
-          <img src={logo} alt="TimeTrack Logo" className="logo" />
+          <img
+            src={logo}
+            alt="TimeTrack Logo"
+            className="logo"
+            loading="lazy"
+          />
           <h1>TimeTrack</h1>
           <button className="button toggle-button" onClick={toggleDarkMode}>
             {darkMode ? "라이트 모드" : "다크 모드"}
