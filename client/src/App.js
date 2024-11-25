@@ -1,9 +1,11 @@
-import React, { useState } from "react";
-import SEO from "./components/SEO";
-import Timer from "./components/Timer";
-import TaskList from "./components/TaskList";
+import React, { useState, lazy, Suspense } from "react";
 import logo from "./logo.svg";
 import "./App.css";
+
+import SEO from "./components/SEO";
+import Timer from "./components/Timer";
+
+const TaskList = lazy(() => import("./components/TaskLisct"));
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -44,7 +46,9 @@ function App() {
         </header>
         <main className="main-content">
           <Timer />
-          <TaskList />
+          <Suspense fallback={<div>Loading...</div>}>
+            <TaskList />
+          </Suspense>
         </main>
       </div>
     </>
