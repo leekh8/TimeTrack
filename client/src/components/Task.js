@@ -46,6 +46,7 @@ const Task = ({ task, toggleTaskCompletion, updateTask, deleteTask }) => {
         <button
           className="button edit-button"
           onClick={isEditing ? handleSave : handleEdit}
+          aria-label={isEditing ? "저장" : "수정"}
         >
           {isEditing ? <FiSave size={16} /> : <FiEdit size={16} />}
         </button>
