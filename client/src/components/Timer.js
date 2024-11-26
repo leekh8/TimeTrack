@@ -157,10 +157,13 @@ const Timer = () => {
               </label>
               <input
                 type="number"
-                value={focusTime}
-                onChange={handleFocusTimeChange}
+                placeholder="25"
+                value={focusTime || ""}
+                onChange={(e) => setFocusTime(Number(e.target.value))}
+                onFocus={(e) => e.target.select()}
                 min="5"
                 max="60"
+                step="1"
               />
             </div>
             <div className="modal-input-container">
@@ -170,10 +173,13 @@ const Timer = () => {
               </label>
               <input
                 type="number"
-                value={breakTime}
-                onChange={handleBreakTimeChange}
+                placeholder="5"
+                value={breakTime || ""}
+                onChange={(e) => setBreakTime(Number(e.target.value))}
+                onFocus={(e) => e.target.select()}
                 min="1"
                 max="30"
+                step="1"
               />
             </div>
             <div className="modal-input-container">
