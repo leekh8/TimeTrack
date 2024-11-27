@@ -38,14 +38,11 @@ function App() {
 
       <div className={`App ${darkMode ? "dark-mode" : ""}`}>
         <header className="header">
-          <img
-            src={logo}
-            alt="TimeTrack Logo"
-            className="logo"
-            loading="lazy"
-          />
-          <h1>TimeTrack</h1>
-          <button className="button toggle-button" onClick={toggleDarkMode}>
+          <div className="logo-title">
+            <img src={logo} alt="TimeTrack Logo" className="logo" />
+            <h1>TimeTrack</h1>
+          </div>
+          <button className="toggle-button" onClick={toggleDarkMode}>
             {darkMode ? "라이트 모드" : "다크 모드"}
           </button>
         </header>
