@@ -47,12 +47,10 @@ function App() {
           </button>
         </header>
         <main className="main-content">
-          <div className="layout-container">
-            <Timer />
-            <Suspense fallback={<div>Loading...</div>}>
-              <TaskList />
-            </Suspense>
-          </div>
+          <Timer />
+          <Suspense fallback={<div>Loading...</div>}>
+            <TaskList />
+          </Suspense>
         </main>
       </div>
     </>
