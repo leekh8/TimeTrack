@@ -13,15 +13,11 @@
   --dark-text-color: #ffffff; /* 다크모드 텍스트 색상 */
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
+/* 전역 스타일 */
 body {
-  font-family: Pretendard, Arial, sans-serif;
-  background-color: var(--client-color);
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: var(--background-color);
   color: var(--text-color);
 }
 
