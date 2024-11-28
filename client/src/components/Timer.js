@@ -115,18 +115,22 @@ const Timer = () => {
   const percentage = (elapsedTime / totalCycleTime) * 100;
 
   return (
-    <div className="timer">
-      <CircularProgressbar
-        value={percentage}
-        text={`${Math.floor(time / 60)}:${String(time % 60).padStart(2, "0")}`}
-        styles={buildStyles({
-          textColor: "#333",
-          pathColor: isBreak ? "var(--break-color)" : "var(--main-color)",
-          trailColor: "#eee",
-          pathTransition: "width 1s linear",
-        })}
-      />
-
+    <div className="timer-container">
+      <div className="timer">
+        <CircularProgressbar
+          value={percentage}
+          text={`${Math.floor(time / 60)}:${String(time % 60).padStart(
+            2,
+            "0"
+          )}`}
+          styles={buildStyles({
+            textColor: "#333",
+            pathColor: isBreak ? "var(--break-color)" : "var(--main-color)",
+            trailColor: "#eee",
+            pathTransition: "width 1s linear",
+          })}
+        />
+      </div>
       <div className="timer-controls">
         <button className="button start-button" onClick={startTimer}>
           {isActive && !isPaused ? "재시작" : "시작"}
