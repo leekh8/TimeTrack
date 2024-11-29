@@ -132,16 +132,16 @@ const Timer = () => {
         />
       </div>
       <div className="timer-controls">
-        <button className="button start-button" onClick={startTimer}>
+        <button className="start-button" onClick={startTimer}>
           {isActive && !isPaused ? "재시작" : "시작"}
         </button>
-        <button className="button pause-button" onClick={pauseTimer}>
+        <button className="pause-button" onClick={pauseTimer}>
           {isPaused ? "계속" : "일시정지"}
         </button>
-        <button className="button reset-button" onClick={resetTimer}>
+        <button className="reset-button" onClick={resetTimer}>
           초기화
         </button>
-        <button className="button set-time-button" onClick={openModal}>
+        <button className="set-time-button" onClick={openModal}>
           시간 설정
         </button>
       </div>
@@ -150,11 +150,11 @@ const Timer = () => {
       {isModalOpen && (
         <div className="modal" onClick={handleOutsideClick}>
           <div className="modal-content">
+            <h3>시간 설정</h3>
             <span className="close-button" onClick={closeModal}>
               &times;
             </span>
-            <h3>시간 설정</h3>
-            <div className="modal-input-container">
+            <div className="modal-input">
               <label>
                 <FaClock style={{ marginRight: "5px" }} />
                 집중 시간 (분):
@@ -165,12 +165,12 @@ const Timer = () => {
                 value={focusTime || ""}
                 onChange={(e) => setFocusTime(Number(e.target.value))}
                 onFocus={(e) => e.target.select()}
-                min="5"
+                min="1"
                 max="60"
                 step="1"
               />
             </div>
-            <div className="modal-input-container">
+            <div className="modal-input">
               <label>
                 <FaBed style={{ marginRight: "5px" }} />
                 휴식 시간 (분):
@@ -182,11 +182,11 @@ const Timer = () => {
                 onChange={(e) => setBreakTime(Number(e.target.value))}
                 onFocus={(e) => e.target.select()}
                 min="1"
-                max="30"
+                max="60"
                 step="1"
               />
             </div>
-            <div className="modal-input-container">
+            <div className="modal-input">
               <label>
                 <FaRecycle style={{ marginRight: "5px" }} />
                 반복 횟수:
@@ -199,7 +199,7 @@ const Timer = () => {
                 max="10"
               />
             </div>
-            <button className="button save-button" onClick={closeModal}>
+            <button className="save-button" onClick={closeModal}>
               저장
             </button>
           </div>
@@ -215,7 +215,7 @@ const Timer = () => {
             </span>
             <h3>타이머 종료</h3>
             <p>모든 사이클이 끝났습니다.</p>
-            <button className="button save-button" onClick={closeEndModal}>
+            <button className="save-button" onClick={closeEndModal}>
               확인
             </button>
           </div>
