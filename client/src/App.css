@@ -1,3 +1,4 @@
+/* 색상 변수 정의 */
 :root {
   --main-color: #4caf50; /* 집중 시간용 색상 */
   --main-hover-color: #388e3c; /* 버튼 호버 색상 */
@@ -21,294 +22,102 @@ body {
   color: var(--text-color);
 }
 
+body.dark-mode {
+  background-color: var(--dark-background-color);
+  color: var(--dark-text-color);
+}
+
+/* 공통 레이아웃 */
 .App {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
+  min-height: 100vh;
+  min-width: 80vw;
+  padding: 0 0.5rem;
 }
 
 .header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  padding: 10px;
+  min-width: 90vh;
+  margin-bottom: 20px;
+}
+
+.logo-title {
+  display: flex;
+  align-items: center;
   gap: 10px;
 }
 
 .logo {
-  width: 40px;
-  height: 40px;
+  width: 2.5rem;
+  height: 2.5rem;
 }
 
-.dark-mode {
-  background-color: #121212;
-  color: #ffffff;
+.toggle-button {
+  background-color: var(--dark-background-color);
+  color: var(--background-color);
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  cursor: pointer;
 }
 
-.dark-mode .header,
-.dark-mode .task-list-container,
-.dark-mode .task-input-container,
-.dark-mode .timer {
-  background-color: #1e1e1e;
+.toggle-button:hover {
+  background-color: var(--border-color);
 }
 
-.dark-mode .task-item {
-  background-color: #333333;
-}
-
-.dark-mode .button {
-  background-color: #333333;
-  color: #ffffff;
-}
-
-.dark-mode .custom-time-input,
-.dark-mode .repeat-cycle-input {
-  background-color: #333333;
-  color: #ffffff;
-  border: 1px solid #555555;
-}
-
-.layout-container {
+/* 메인 컨텐츠 레이아웃 */
+.main-content {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 20px;
-}
-
-.timer {
-  flex: 1;
-  max-width: 300px;
-}
-
-.time-display {
-  font-size: 3rem;
-  color: var(--text-color);
-  margin-bottom: 15px;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-}
-
-.time-display.animate {
-  transform: scale(1.1);
-  opacity: 0.8;
-}
-
-.timer-controls {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin-top: 20px;
-}
-
-.timer-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
   width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  max-width: 1200px;
+  gap: 20px;
+}
+
+.timer-container,
+.task-list {
+  flex: 1;
+  max-width: 48%; /* 화면 비율 유지 */
+  background-color: var(--background-color);
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.timer-container {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  animation: fadeIn 0.5s ease;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.modal-content {
-  background: var(--client-color);
-  padding: 30px;
-  border-radius: 15px;
-  width: 350px;
-  text-align: center;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  position: relative;
-  transform: scale(0.95);
-  animation: scaleUp 0.3s ease-in-out forwards;
-}
-
-@keyframes scaleUp {
-  to {
-    transform: scale(1);
-  }
-}
-
-.modal-input-container {
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.modal-input-container label {
-  font-size: 1rem;
-  color: var(--text-color);
-  margin-right: 10px;
-}
-
-.modal-input-container input {
-  width: 80px;
-  padding: 8px;
-  font-size: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  text-align: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
-
-.modal-input-container input:focus {
-  border-color: var(--main-color);
-  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
-}
-
-.modal-content h3 {
-  margin-bottom: 20px;
-  color: var(--text-color);
-  font-weight: bold;
-  font-size: 1.4rem;
-}
-
-label {
-  font-size: 1rem;
-  color: var(--text-color);
-  margin-right: 5px;
 }
 
 .task-list-container {
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
+  max-height: 400px;
+  overflow-y: auto;
 }
 
-.task-list {
-  flex: 2;
-  max-width: 600px;
+.timer {
 }
 
-.task-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.task-input-container {
-  width: 100%;
-  max-width: 800px;
-  margin-bottom: 15px;
-}
-
-.task-input {
-  width: 64%;
-  flex: 1;
-  padding: 10px;
-  margin: 5px;
-}
-
-.task-input-edit {
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  width: calc(100% - 50px);
-  margin-right: 10px;
-}
-
-.task-index {
-  font-size: 1.2rem;
-  color: var(--main-color);
-}
-
-.task-text {
-  flex: 1;
-  word-break: break-word;
-}
-
-.task-item {
-  width: 100%;
-  max-width: 800px;
-  padding: 10px;
-  margin: 5px auto;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  transition: all 0.3s ease;
-  word-wrap: break-word;
-}
-
-.task-item.completed {
-  opacity: 0.6;
-  text-decoration: line-through;
-  color: #888888;
-  background-color: #e0e0e0;
-  transform: scale(0.98);
-}
-
-.task-item.added {
-  animation: fadeIn 0.5s ease-in-out;
-}
-
-.task-item .check-icon {
-  margin-right: 10px;
-  color: var(--main-color);
-}
-
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
+/* Timer button */
 button {
+  font-size: 1rem;
+  color: var(--background-color);
   cursor: pointer;
   border: none;
-  color: var(--client-color);
-  transition: background-color 0.3s ease;
-}
-
-.button {
-  padding: 10px 20px;
-  margin: 5px;
-  font-weight: bold;
   border-radius: 5px;
-  width: 120px;
-  height: auto;
-  display: inline-block;
-  text-align: center;
-  white-space: nowrap;
+  padding: 10px 15px;
+  margin: 5px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
 
-.button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
-}
-
-.toggle-button {
-  margin-left: 50px;
-  background-color: #888888;
-  color: #ffffff;
+.timer-controls {
+  margin-top: 1rem;
+  padding: 0.25rem;
 }
 
 .start-button {
@@ -316,72 +125,138 @@ button {
 }
 
 .start-button:hover {
-  background-color: var(--hover-color);
+  background-color: var(--main-hover-color);
 }
 
 .pause-button {
-  background-color: var(--point-color);
+  background-color: var(--accent-color);
 }
 
 .pause-button:hover {
-  background-color: #e64a19;
+  background-color: var(--accent-hover-color);
 }
 
 .reset-button {
-  background-color: #ff9800;
+  background-color: var(--reset-color);
 }
 
 .reset-button:hover {
-  background-color: #f57c00;
+  background-color: var(--reset-hover-color);
 }
 
 .set-time-button {
   background-color: var(--main-color);
-  color: var(--client-color);
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
 .set-time-button:hover {
-  background-color: var(--hover-color);
+  background-color: var(--main-hover-color);
 }
 
-.close-button {
-  position: absolute;
-  top: 15px;
-  right: 20px;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: var(--text-color);
+/* Modal 관련 스타일 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: var(--background-color);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px var(--shadow-color);
+  width: 300px;
+  max-width: 90%;
+}
+
+.modal-input {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.modal-input label {
+  font-size: 14px;
+}
+
+.modal-input input {
+  width: 80px;
+  padding: 5px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  text-align: center;
 }
 
 .save-button {
   background-color: var(--main-color);
-  padding: 12px 20px;
-  margin-top: 15px;
-  border-radius: 8px;
-  cursor: pointer;
-  color: var(--client-color);
+  color: var(--background-color);
   border: none;
-  font-size: 1.1rem;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 5px;
+  padding: 10px 15px;
+  cursor: pointer;
 }
 
 .save-button:hover {
-  background-color: var(--hover-color);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  background-color: var(--main-hover-color);
+}
+
+.close-button {
+  background-color: var(--accent-color);
+  color: var(--background-color);
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  cursor: pointer;
+}
+
+.close-button:hover {
+  background-color: var(--accent-hover-color);
+}
+
+/* Task 입력 및 리스트 스타일 */
+.task-input-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+
+.task-input {
+  flex: 1;
+  font-size: 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
 }
 
 .add-button {
-  background-color: #ccc;
-  margin-left: 12px;
+  background-color: var(--main-color);
 }
 
-.add-button.active {
-  background-color: var(--main-color);
+.add-button:hover {
+  background-color: var(--main-hover-color);
+}
+
+/* Task 리스트 아이템 */
+.task-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  background-color: var(--background-color);
+  border: 1px solid var(--border-color);
+}
+
+.task-item.completed {
+  text-decoration: line-through;
+  opacity: 0.6;
 }
 
 .task-buttons {
@@ -394,136 +269,32 @@ button {
   background-color: transparent;
   border: none;
   cursor: pointer;
-  font-size: 1.5rem;
-  transition: color 0.3s ease;
   padding: 5px;
-}
-
-.edit-button {
-  color: var(--main-color);
+  font-size: 14px;
 }
 
 .edit-button:hover {
-  color: var(--hover-color);
-}
-
-.delete-button {
-  color: #ff4444;
+  color: var(--main-color);
 }
 
 .delete-button:hover {
-  color: #ff0000;
+  color: #ff4444;
 }
 
-/* 미디어 쿼리 */
+/* 반응형 디자인 */
 @media (max-width: 768px) {
-  .App {
-    padding: 10px;
-  }
-
-  .header {
+  .main-content {
     flex-direction: column;
-    align-items: center;
-    gap: 5px;
-    text-align: center;
-    font-size: 1.5rem;
-  }
-
-  .logo {
-    width: 30px;
-    height: 30px;
-  }
-
-  h1 {
-    font-size: 1.5rem;
-    margin: 0;
-  }
-
-  .button {
-    border-radius: 5px;
-    width: auto;
-    padding: 10px 20px;
-    font-size: 14px;
-  }
-
-  .toggle-button {
-    margin-top: 5px;
-    padding: 8px 16px;
-    font-size: 14px;
-  }
-
-  .layout-container {
-    flex-direction: column;
-    align-items: center;
     gap: 20px;
   }
 
-  .timer,
+  .timer-container,
   .task-list {
     max-width: 100%;
   }
 
-  .timer-controls {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-  }
-
   .task-input-container {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .task-input {
-    padding: 8px;
-    font-size: 14px;
-    width: 90%;
-    margin-bottom: 10px;
-  }
-
-  .custom-time-container {
     flex-direction: column;
     gap: 10px;
-  }
-
-  .modal-content {
-    width: 90%;
-    padding: 20px;
-    font-size: 14px;
-  }
-
-  .modal-input-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .modal-input-container label {
-    font-size: 14px;
-    margin-bottom: 5px;
-  }
-
-  .modal-input-container input {
-    width: 100%;
-    padding: 8px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-
-  .save-button {
-    padding: 10px 15px;
-    font-size: 14px;
-    width: 100%;
-  }
-
-  .close-button {
-    font-size: 20px;
   }
 }
