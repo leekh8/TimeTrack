@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { FaClock, FaRecycle, FaBed } from "react-icons/fa";
-import "../App.css";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import "../App.css";
 
 const Timer = () => {
   const [time, setTime] = useState(1500); // 기본 25분
@@ -14,22 +14,14 @@ const Timer = () => {
   const [isBreak, setIsBreak] = useState(false);
   const [currentCycle, setCurrentCycle] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isEndModalOpen, setIsEndModalOpen] = useState(false); // 종료 모달
 
   const startTimer = () => {
-    if (!focusTime || focusTime <= 0) {
-      setFocusTime(25);
-      setTime(25 * 60);
-    } else {
-      setTime(focusTime * 60);
-    }
+    setTime(focusTime * 60);
     setIsActive(true);
     setIsPaused(false);
   };
 
-  const pauseTimer = () => {
-    setIsPaused(!isPaused);
-  };
+  const pauseTimer = () => setIsPaused(!isPaused);
 
   const resetTimer = () => {
     setTime(isBreak ? breakTime * 60 : focusTime * 60);
@@ -40,20 +32,24 @@ const Timer = () => {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const openEndModal = () => setIsEndModalOpen(true);
-  const closeEndModal = () => setIsEndModalOpen(false);
-
   // 모달 창 외부 클릭 감지 이벤트 핸들러
   const handleOutsideClick = (e) => {
     if (e.target.classList.contains("modal")) {
       closeModal();
-      closeEndModal(); // 종료 모달도 동일하게 닫기
     }
   };
 
+  // focusTime, breakTime 변경 시 time 값을 즉시 업데이트
   useEffect(() => {
-    let interval = null;
+    if (!isActive && !isBreak) {
+      setTime(focusTime * 60);
+    } else if (!isActive && isBreak) {
+      setTime(breakTime * 60);
+    }
+  }, [focusTime, breakTime, isActive, isBreak]);
 
+  useEffect(() => {
+    let interval;
     if (isActive && !isPaused) {
       interval = setInterval(() => {
         setTime((prevTime) => prevTime - 1);
@@ -72,47 +68,34 @@ const Timer = () => {
       }
 
       if (!isBreak && currentCycle >= repeatCycles - 1) {
-        openEndModal(); // 종료 모달 열기
         setIsActive(false);
         setIsPaused(false);
-        setIsBreak(false);
         setCurrentCycle(0);
-      } else {
-        setIsActive(true);
-        setIsPaused(false);
       }
     }
 
     return () => clearInterval(interval);
   }, [
+    time,
     isActive,
     isPaused,
-    time,
-    currentCycle,
-    repeatCycles,
+    isBreak,
     focusTime,
     breakTime,
-    isBreak,
+    currentCycle,
+    repeatCycles,
   ]);
 
-  const handleFocusTimeChange = (e) => {
-    setFocusTime(Number(e.target.value));
-  };
+  const totalTime = focusTime * 60 + breakTime * 60;
+  const elapsed = isBreak ? breakTime * 60 - time : focusTime * 60 - time;
+  const percentage = (elapsed / totalTime) * 100;
 
-  const handleBreakTimeChange = (e) => {
-    setBreakTime(Number(e.target.value));
+  const adjustValue = (setter, value, delta, min, max) => {
+    const newValue = value + delta;
+    if (newValue >= min && newValue <= max) {
+      setter(newValue);
+    }
   };
-
-  const handleRepeatCycleChange = (e) => {
-    setRepeatCycles(Number(e.target.value));
-  };
-
-  // 원형 프로그래스 바의 퍼센티지 계산 (전체 사이클 기준)
-  const totalCycleTime = focusTime * 60 + breakTime * 60;
-  const elapsedTime = isBreak
-    ? breakTime * 60 - time + focusTime * 60
-    : focusTime * 60 - time;
-  const percentage = (elapsedTime / totalCycleTime) * 100;
 
   return (
     <div className="timer-container">
@@ -125,15 +108,14 @@ const Timer = () => {
           )}`}
           styles={buildStyles({
             textColor: "#333",
-            pathColor: isBreak ? "var(--break-color)" : "var(--main-color)",
+            pathColor: isBreak ? "var(--accent-color)" : "var(--main-color)",
             trailColor: "#eee",
-            pathTransition: "width 1s linear",
           })}
         />
       </div>
       <div className="timer-controls">
         <button className="start-button" onClick={startTimer}>
-          {isActive && !isPaused ? "재시작" : "시작"}
+          {isActive ? "재시작" : "시작"}
         </button>
         <button className="pause-button" onClick={pauseTimer}>
           {isPaused ? "계속" : "일시정지"}
@@ -159,64 +141,92 @@ const Timer = () => {
                 <FaClock style={{ marginRight: "5px" }} />
                 집중 시간 (분):
               </label>
-              <input
-                type="number"
-                placeholder="25"
-                value={focusTime || ""}
-                onChange={(e) => setFocusTime(Number(e.target.value))}
-                onFocus={(e) => e.target.select()}
-                min="1"
-                max="60"
-                step="1"
-              />
+              <div className="input-with-buttons">
+                <button
+                  className="adjust-button"
+                  onClick={() =>
+                    adjustValue(setFocusTime, focusTime, -5, 5, 60)
+                  }
+                >
+                  -
+                </button>
+                <input
+                  type="number"
+                  value={focusTime}
+                  onChange={(e) => setFocusTime(Number(e.target.value))}
+                  min="1"
+                  max="60"
+                />
+                <button
+                  className="adjust-button"
+                  onClick={() => adjustValue(setFocusTime, focusTime, 5, 5, 60)}
+                >
+                  +
+                </button>
+              </div>
             </div>
             <div className="modal-input">
               <label>
                 <FaBed style={{ marginRight: "5px" }} />
                 휴식 시간 (분):
               </label>
-              <input
-                type="number"
-                placeholder="5"
-                value={breakTime || ""}
-                onChange={(e) => setBreakTime(Number(e.target.value))}
-                onFocus={(e) => e.target.select()}
-                min="1"
-                max="60"
-                step="1"
-              />
+              <div className="input-with-buttons">
+                <button
+                  className="adjust-button"
+                  onClick={() =>
+                    adjustValue(setBreakTime, breakTime, -5, 5, 30)
+                  }
+                >
+                  -
+                </button>
+                <input
+                  type="number"
+                  value={breakTime}
+                  onChange={(e) => setBreakTime(Number(e.target.value))}
+                  min="1"
+                  max="30"
+                />
+                <button
+                  className="adjust-button"
+                  onClick={() => adjustValue(setBreakTime, breakTime, 5, 5, 30)}
+                >
+                  +
+                </button>
+              </div>
             </div>
             <div className="modal-input">
               <label>
                 <FaRecycle style={{ marginRight: "5px" }} />
                 반복 횟수:
               </label>
-              <input
-                type="number"
-                value={repeatCycles}
-                onChange={handleRepeatCycleChange}
-                min="1"
-                max="10"
-              />
+              <div className="input-with-buttons">
+                <button
+                  className="adjust-button"
+                  onClick={() =>
+                    adjustValue(setRepeatCycles, repeatCycles, -1, 1, 10)
+                  }
+                >
+                  -
+                </button>
+                <input
+                  type="number"
+                  value={repeatCycles}
+                  onChange={(e) => setRepeatCycles(Number(e.target.value))}
+                  min="1"
+                  max="10"
+                />
+                <button
+                  className="adjust-button"
+                  onClick={() =>
+                    adjustValue(setRepeatCycles, repeatCycles, 1, 1, 10)
+                  }
+                >
+                  +
+                </button>
+              </div>
             </div>
             <button className="save-button" onClick={closeModal}>
-              저장
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* 타이머 종료 모달 창 */}
-      {isEndModalOpen && (
-        <div className="modal" onClick={handleOutsideClick}>
-          <div className="modal-content">
-            <span className="close-button" onClick={closeEndModal}>
-              &times;
-            </span>
-            <h3>타이머 종료</h3>
-            <p>모든 사이클이 끝났습니다.</p>
-            <button className="save-button" onClick={closeEndModal}>
-              확인
+              설정
             </button>
           </div>
         </div>
