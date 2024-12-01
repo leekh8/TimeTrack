@@ -134,7 +134,7 @@ const Timer = () => {
           <div className="modal-content">
             <h3>시간 설정</h3>
             <span className="close-button" onClick={closeModal}>
-              &times;
+              &#10007;
             </span>
             <div className="modal-input">
               <label>
@@ -226,7 +226,7 @@ const Timer = () => {
               </div>
             </div>
             <button className="save-button" onClick={closeModal}>
-              설정
+              &#10003;
             </button>
           </div>
         </div>
