@@ -41,7 +41,7 @@ body.dark-mode {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  min-width: 90vh;
+  min-width: 96%;
   margin-bottom: 20px;
 }
 
@@ -49,6 +49,7 @@ body.dark-mode {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-grow: 1;
 }
 
 .logo {
