@@ -18,7 +18,7 @@ const Task = ({ task, toggleTaskCompletion, updateTask, deleteTask }) => {
   };
 
   return (
-    <div className="task-content">
+    <div className={`task-content ${task.completed ? "completed" : ""}`}>
       {isEditing ? (
         <input
           type="text"
@@ -44,16 +44,13 @@ const Task = ({ task, toggleTaskCompletion, updateTask, deleteTask }) => {
       )}
       <div className="task-buttons">
         <button
-          className="button edit-button"
+          className="edit-button"
           onClick={isEditing ? handleSave : handleEdit}
           aria-label={isEditing ? "저장" : "수정"}
         >
           {isEditing ? <FiSave size={16} /> : <FiEdit size={16} />}
         </button>
-        <button
-          className="button delete-button"
-          onClick={() => deleteTask(task.id)}
-        >
+        <button className="delete-button" onClick={() => deleteTask(task.id)}>
           <FiTrash2 size={16} />
         </button>
       </div>

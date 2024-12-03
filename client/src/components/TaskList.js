@@ -17,24 +17,24 @@ const TaskList = () => {
     }
   };
 
-  const toggleTaskCompletion = (taskId) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId ? { ...task, completed: !task.completed } : task
+  const toggleTaskCompletion = (id) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === id ? { ...task, completed: !task.completed } : task
       )
     );
   };
 
-  const updateTask = (taskId, newText) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId ? { ...task, text: newText } : task
+  const updateTask = (id, newText) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === id ? { ...task, text: newText } : task
       )
     );
   };
 
-  const deleteTask = (taskId) => {
-    setTasks(tasks.filter((task) => task.id !== taskId));
+  const deleteTask = (id) => {
+    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
   };
 
   const handleOnDragEnd = (result) => {
@@ -51,29 +51,28 @@ const TaskList = () => {
     <div className="task-list">
       <div className="task-input-container">
         <input
+          className="task-input"
           type="text"
           placeholder="할 일을 입력하세요"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              e.preventDefault(); // 기본 동작 방지
-              e.stopPropagation(); // 이벤트 전파 방지
+              e.preventDefault();
               addTask();
             }
           }}
-          className="task-input"
         />
         <button
-          className={`button add-button ${input ? "active" : ""}`}
+          className={`add-button ${input.trim() ? "active" : ""}`}
           onClick={addTask}
           disabled={!input.trim()}
         >
-          추가
+          &#x2B;
         </button>
       </div>
       <DragDropContext onDragEnd={handleOnDragEnd}>
-        <Droppable droppableId="tasks-droppable">
+        <Droppable droppableId="tasks">
           {(provided) => (
             <ul
               className="task-list-container"
@@ -81,16 +80,10 @@ const TaskList = () => {
               ref={provided.innerRef}
             >
               {tasks.map((task, index) => (
-                <Draggable
-                  key={task.id}
-                  draggableId={`${task.id}`}
-                  index={index}
-                >
+                <Draggable key={task.id} draggableId={task.id} index={index}>
                   {(provided) => (
                     <li
-                      className={`task-item ${
-                        task.completed ? "completed" : ""
-                      }`}
+                      className="task-item"
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
