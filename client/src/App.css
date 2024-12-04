@@ -76,6 +76,7 @@ body.dark-mode {
   justify-content: space-between;
   width: 100%;
   max-width: 1200px;
+  min-height: 80vh;
   gap: 20px;
 }
 
@@ -85,7 +86,7 @@ body.dark-mode {
   max-width: 48%; /* 화면 비율 유지 */
   background-color: var(--background-color);
   border-radius: 1rem;
-  padding: 1rem;
+  padding: 0.5rem;
   box-shadow: 0 2px 4px var(--shadow-color);
 }
 
@@ -96,7 +97,7 @@ body.dark-mode {
 }
 
 .task-list-container {
-  max-height: 400px;
+  max-height: 70vh;
   overflow-y: auto;
   padding-left: 0;
 }
@@ -331,6 +332,7 @@ button {
   background-color: var(--background-color);
   box-shadow: 0 2px 4px var(--shadow-color);
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .task-item:hover {
@@ -343,15 +345,17 @@ button {
   font-size: 1rem;
   color: var(--text-color);
   flex-grow: 1;
-  margin-right: 1rem;
+  margin-right: 1.2rem;
+  margin-left: 0.5rem;
   word-wrap: break-word;
-  white-space: pre-wrap;
+  white-space: normal;
   overflow-wrap: break-word;
   max-width: calc(100% - 120px);
+  cursor: pointer;
 }
 
 .task-content {
-  display: flex;
+  display: contents;
   align-items: center;
   justify-content: space-between;
   padding: 0 0.2rem;
@@ -359,12 +363,27 @@ button {
   border-radius: 10px;
   background-color: transparent;
   min-height: 2rem;
+  cursor: pointer;
 }
 
 .task-content.completed .task-text {
   text-decoration: line-through;
-  color: var(--accent-color);
+  border-radius: 10px;
+  background-color: var(--accent-hover-color);
   opacity: 0.6;
+}
+
+/* 체크박스 */
+.task-checkbox {
+  margin-right: 10px;
+  border-radius: 10px;
+}
+
+.task-checkbox input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--main-color);
+  cursor: pointer;
 }
 
 /* Task 버튼 그룹 */
@@ -373,11 +392,12 @@ button {
   gap: 0.2rem;
   justify-content: flex-end;
   flex-shrink: 0;
+  cursor: pointer;
 }
 
 /* Task 버튼 스타일 */
 .task-buttons button {
-  background-color: #ffffff;
+  background-color: transparent;
   border: 1px solid var(--border-color);
   border-radius: 50%;
   width: 40px;
@@ -391,7 +411,7 @@ button {
 
 .task-buttons button:hover {
   background-color: var(--main-color);
-  color: #ffffff;
+  color: var(--dark-text-color);
   border: none;
 }
 
@@ -431,27 +451,26 @@ button {
 
   .timer-container,
   .task-list {
-    max-width: 100%;
+    min-width: 95vh;
   }
 
   .task-input-container {
-    flex-direction: column;
+    flex-direction: row;
     gap: 10px;
   }
 
   .task-item {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
   }
 
   .task-buttons {
-    width: 100%;
     justify-content: flex-end;
     align-self: flex-end;
   }
 
   .task-input {
-    width: 100%;
+    width: 95%;
   }
 
   .task-text {
@@ -459,7 +478,9 @@ button {
   }
 
   .add-button {
-    width: 100%;
     margin-top: 10px;
+  }
+
+  .task-checkbox {
   }
 }
