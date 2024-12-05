@@ -18,7 +18,18 @@ const Task = ({ task, toggleTaskCompletion, updateTask, deleteTask }) => {
   };
 
   return (
-    <div className={`task-content ${task.completed ? "completed" : ""}`}>
+    <div
+      className={`task-content ${task.completed ? "completed" : ""}`}
+      onClick={() => toggleTaskCompletion(task.id)}
+    >
+      <div className="task-checkbox">
+        <input
+          type="checkbox"
+          checked={task.completed}
+          onChange={() => toggleTaskCompletion(task.id)} // 체크박스 클릭 이벤트
+          onClick={(e) => e.stopPropagation()} // 클릭 이벤트 전파 방지
+        />
+      </div>
       {isEditing ? (
         <input
           type="text"
@@ -35,22 +46,26 @@ const Task = ({ task, toggleTaskCompletion, updateTask, deleteTask }) => {
           className="task-input-edit"
         />
       ) : (
-        <span
-          className="task-text"
-          onClick={() => toggleTaskCompletion(task.id)}
-        >
-          {task.text}
-        </span>
+        <span className="task-text">{task.text}</span>
       )}
       <div className="task-buttons">
         <button
           className="edit-button"
-          onClick={isEditing ? handleSave : handleEdit}
+          onClick={(e) => {
+            e.stopPropagation();
+            isEditing ? handleSave() : handleEdit();
+          }}
           aria-label={isEditing ? "저장" : "수정"}
         >
           {isEditing ? <FiSave size={16} /> : <FiEdit size={16} />}
         </button>
-        <button className="delete-button" onClick={() => deleteTask(task.id)}>
+        <button
+          className="delete-button"
+          onClick={(e) => {
+            e.stopPropagation();
+            deleteTask(task.id);
+          }}
+        >
           <FiTrash2 size={16} />
         </button>
       </div>
