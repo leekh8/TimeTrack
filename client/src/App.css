@@ -334,11 +334,13 @@ button {
   box-shadow: 0 0.125rem 0.25rem var(--shadow-color);
   transition: all 0.3s ease;
   cursor: pointer;
+  position: relative;
 }
 
 .task-item:hover {
   box-shadow: 0 0.25rem 0.5rem var(--border-color);
   background-color: var(--shadow-color);
+  transform: scale(1.02);
 }
 
 /* Task 텍스트 */

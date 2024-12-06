@@ -41,6 +41,7 @@ const TaskList = () => {
     if (!result.destination) return;
 
     const items = Array.from(tasks);
+
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
 
@@ -79,25 +80,29 @@ const TaskList = () => {
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
-              {tasks.map((task, index) => (
-                <Draggable key={task.id} draggableId={task.id} index={index}>
-                  {(provided) => (
-                    <li
-                      className="task-item"
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                    >
-                      <Task
-                        task={task}
-                        toggleTaskCompletion={toggleTaskCompletion}
-                        updateTask={updateTask}
-                        deleteTask={deleteTask}
-                      />
-                    </li>
-                  )}
-                </Draggable>
-              ))}
+              {tasks.length > 0 ? (
+                tasks.map((task, index) => (
+                  <Draggable key={task.id} draggableId={task.id} index={index}>
+                    {(provided) => (
+                      <li
+                        className="task-item"
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      >
+                        <Task
+                          task={task}
+                          toggleTaskCompletion={toggleTaskCompletion}
+                          updateTask={updateTask}
+                          deleteTask={deleteTask}
+                        />
+                      </li>
+                    )}
+                  </Draggable>
+                ))
+              ) : (
+                <li style={{ textAlign: "center" }}>할 일이 없습니다.</li>
+              )}
               {provided.placeholder}
             </ul>
           )}
