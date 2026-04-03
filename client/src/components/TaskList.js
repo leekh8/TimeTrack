@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Task from "./Task";
 import "../App.css";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
@@ -15,11 +15,26 @@ const loadTasks = () => {
 const TaskList = () => {
   const [tasks, setTasks] = useState(loadTasks);
   const [input, setInput] = useState("");
+  const [showCompleted, setShowCompleted] = useState(false);
+  const inputRef = useRef(null);
 
-  // tasks 변경 시 localStorage에 저장
   useEffect(() => {
     localStorage.setItem("timetrack-tasks", JSON.stringify(tasks));
   }, [tasks]);
+
+  // N 키 → 할 일 입력 포커스
+  useEffect(() => {
+    const handleKey = (e) => {
+      const tag = document.activeElement.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      if (e.code === "KeyN") {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, []);
 
   const addTask = () => {
     if (input.trim()) {
@@ -33,48 +48,50 @@ const TaskList = () => {
 
   const toggleTaskCompletion = (id) => {
     setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
+      prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
     );
   };
 
   const updateTask = (id, newText) => {
     setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id ? { ...task, text: newText } : task
-      )
+      prev.map((t) => (t.id === id ? { ...t, text: newText } : t))
     );
   };
 
   const deleteTask = (id) => {
-    setTasks((prev) => prev.filter((task) => task.id !== id));
+    setTasks((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  const clearCompleted = () => {
+    setTasks((prev) => prev.filter((t) => !t.completed));
   };
 
   const handleOnDragEnd = (result) => {
     if (!result.destination) return;
-    const items = Array.from(tasks);
-    const [moved] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, moved);
-    setTasks(items);
+    // 미완료 항목만 드래그 가능
+    const active = tasks.filter((t) => !t.completed);
+    const completed = tasks.filter((t) => t.completed);
+    const [moved] = active.splice(result.source.index, 1);
+    active.splice(result.destination.index, 0, moved);
+    setTasks([...active, ...completed]);
   };
 
-  const completedCount = tasks.filter((t) => t.completed).length;
+  const activeTasks = tasks.filter((t) => !t.completed);
+  const completedTasks = tasks.filter((t) => t.completed);
 
   return (
     <div className="task-list">
+      {/* 입력 영역 */}
       <div className="task-input-container">
         <input
+          ref={inputRef}
           className="task-input"
           type="text"
-          placeholder="할 일을 입력하세요"
+          placeholder="할 일을 입력하세요 (N)"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              addTask();
-            }
+            if (e.key === "Enter") { e.preventDefault(); addTask(); }
           }}
         />
         <button
@@ -86,12 +103,20 @@ const TaskList = () => {
         </button>
       </div>
 
+      {/* 진행률 */}
       {tasks.length > 0 && (
-        <p className="task-progress">
-          {completedCount} / {tasks.length} 완료
-        </p>
+        <div className="task-progress-bar-wrap">
+          <div
+            className="task-progress-bar"
+            style={{ width: `${tasks.length ? (completedTasks.length / tasks.length) * 100 : 0}%` }}
+          />
+          <span className="task-progress-label">
+            {completedTasks.length} / {tasks.length} 완료
+          </span>
+        </div>
       )}
 
+      {/* 미완료 항목 — 드래그 가능 */}
       <DragDropContext onDragEnd={handleOnDragEnd}>
         <Droppable droppableId="tasks">
           {(provided) => (
@@ -100,8 +125,8 @@ const TaskList = () => {
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
-              {tasks.length > 0 ? (
-                tasks.map((task, index) => (
+              {activeTasks.length > 0 ? (
+                activeTasks.map((task, index) => (
                   <Draggable key={task.id} draggableId={task.id} index={index}>
                     {(provided) => (
                       <li
@@ -121,13 +146,47 @@ const TaskList = () => {
                   </Draggable>
                 ))
               ) : (
-                <li className="task-empty">할 일이 없습니다.</li>
+                <li className="task-empty">
+                  {completedTasks.length > 0 ? "🎉 모든 할 일 완료!" : "할 일이 없습니다."}
+                </li>
               )}
               {provided.placeholder}
             </ul>
           )}
         </Droppable>
       </DragDropContext>
+
+      {/* 완료 항목 접기/펼치기 */}
+      {completedTasks.length > 0 && (
+        <div className="completed-section">
+          <button
+            className="toggle-completed-btn"
+            onClick={() => setShowCompleted((v) => !v)}
+          >
+            {showCompleted ? "▲" : "▼"} 완료된 항목 {completedTasks.length}개
+          </button>
+
+          {showCompleted && (
+            <>
+              <ul className="task-list-container completed-list">
+                {completedTasks.map((task) => (
+                  <li key={task.id} className="task-item task-item--completed">
+                    <Task
+                      task={task}
+                      toggleTaskCompletion={toggleTaskCompletion}
+                      updateTask={updateTask}
+                      deleteTask={deleteTask}
+                    />
+                  </li>
+                ))}
+              </ul>
+              <button className="clear-completed-btn" onClick={clearCompleted}>
+                완료 항목 전체 삭제
+              </button>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 };

@@ -1,10 +1,15 @@
 import React, { useState, memo } from "react";
 import "../App.css";
 import { FiEdit, FiSave, FiTrash2 } from "react-icons/fi";
+import { FaPlay, FaStop } from "react-icons/fa";
+import { useAppContext } from "../context/AppContext";
 
 const Task = memo(({ task, toggleTaskCompletion, updateTask, deleteTask }) => {
+  const { activeTask, setActiveTask } = useAppContext();
   const [isEditing, setIsEditing] = useState(false);
   const [newText, setNewText] = useState(task.text);
+
+  const isActiveTask = activeTask?.id === task.id;
 
   const handleSave = () => {
     if (newText.trim()) {
@@ -14,29 +19,31 @@ const Task = memo(({ task, toggleTaskCompletion, updateTask, deleteTask }) => {
   };
 
   const handleCancel = () => {
-    setNewText(task.text); // 원래 텍스트로 복원
+    setNewText(task.text);
     setIsEditing(false);
   };
 
   const handleEditToggle = (e) => {
     e.stopPropagation();
-    if (isEditing) {
-      handleSave();
-    } else {
-      setIsEditing(true);
-    }
+    if (isEditing) handleSave();
+    else setIsEditing(true);
+  };
+
+  const handleFocusToggle = (e) => {
+    e.stopPropagation();
+    setActiveTask(isActiveTask ? null : { id: task.id, text: task.text });
   };
 
   return (
     <div
-      className={`task-content ${task.completed ? "completed" : ""}`}
+      className={`task-content ${task.completed ? "completed" : ""} ${isActiveTask ? "task-content--active" : ""}`}
       onClick={() => !isEditing && toggleTaskCompletion(task.id)}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
         if (e.key === "Enter" && !isEditing) toggleTaskCompletion(task.id);
       }}
-      aria-label={`할 일: ${task.text}${task.completed ? " (완료)" : ""}`}
+      aria-label={`할 일: ${task.text}${task.completed ? " (완료)" : ""}${isActiveTask ? " (집중 중)" : ""}`}
     >
       <div className="task-checkbox">
         <input
@@ -54,15 +61,9 @@ const Task = memo(({ task, toggleTaskCompletion, updateTask, deleteTask }) => {
           value={newText}
           onChange={(e) => setNewText(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              handleSave();
-            } else if (e.key === "Escape") {
-              e.preventDefault();
-              handleCancel(); // ESC로 취소
-            } else if (e.key === " ") {
-              e.stopPropagation();
-            }
+            if (e.key === "Enter") { e.preventDefault(); handleSave(); }
+            else if (e.key === "Escape") { e.preventDefault(); handleCancel(); }
+            else if (e.key === " ") e.stopPropagation();
           }}
           onClick={(e) => e.stopPropagation()}
           className="task-input-edit"
@@ -73,6 +74,17 @@ const Task = memo(({ task, toggleTaskCompletion, updateTask, deleteTask }) => {
       )}
 
       <div className="task-buttons">
+        {/* 집중 시작/해제 버튼 — 완료된 항목에는 숨김 */}
+        {!task.completed && (
+          <button
+            className={`focus-button ${isActiveTask ? "focus-button--active" : ""}`}
+            onClick={handleFocusToggle}
+            aria-label={isActiveTask ? "집중 해제" : "이 할 일로 집중 시작"}
+            title={isActiveTask ? "집중 해제" : "집중 시작"}
+          >
+            {isActiveTask ? <FaStop size={13} /> : <FaPlay size={13} />}
+          </button>
+        )}
         <button
           className="edit-button"
           onClick={handleEditToggle}
@@ -82,10 +94,7 @@ const Task = memo(({ task, toggleTaskCompletion, updateTask, deleteTask }) => {
         </button>
         <button
           className="delete-button"
-          onClick={(e) => {
-            e.stopPropagation();
-            deleteTask(task.id);
-          }}
+          onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}
           aria-label="삭제"
         >
           <FiTrash2 size={16} />

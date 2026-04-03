@@ -537,3 +537,189 @@ button:disabled {
     width: 90vw;
   }
 }
+
+/* ── 타이머 — 현재 집중 Task 배너 ──────────────── */
+.timer-active-task {
+  font-size: 0.82rem;
+  color: var(--main-color);
+  background-color: rgba(76, 175, 80, 0.1);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  border-radius: 2rem;
+  padding: 0.3rem 0.9rem;
+  margin-bottom: 0.6rem;
+  max-width: 90%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+/* ── 타이머 — 배경음 선택 ───────────────────────── */
+.sound-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.sound-icon {
+  color: var(--text-color);
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.sound-select {
+  font-size: 0.82rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+.App.dark-mode .sound-select {
+  background-color: #2a2a2a;
+  color: var(--dark-text-color);
+  border-color: #444;
+}
+
+/* ── 타이머 — 오늘 통계 ─────────────────────────── */
+.timer-stats {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--text-color);
+  opacity: 0.65;
+  margin-top: 0.5rem;
+}
+
+.stats-sep { opacity: 0.4; }
+
+/* ── 타이머 — 단축키 안내 ───────────────────────── */
+.shortcut-hint {
+  font-size: 0.7rem;
+  color: var(--text-color);
+  opacity: 0.4;
+  margin: 0.3rem 0 0;
+  letter-spacing: 0.01em;
+}
+
+/* ── TaskList — 진행률 바 ───────────────────────── */
+.task-progress-bar-wrap {
+  position: relative;
+  height: 0.45rem;
+  background-color: var(--border-color);
+  border-radius: 1rem;
+  margin-bottom: 0.9rem;
+  overflow: hidden;
+}
+
+.task-progress-bar {
+  height: 100%;
+  background-color: var(--main-color);
+  border-radius: 1rem;
+  transition: width 0.4s ease;
+}
+
+.task-progress-label {
+  position: absolute;
+  right: 0;
+  top: 0.6rem;
+  font-size: 0.72rem;
+  color: var(--text-color);
+  opacity: 0.6;
+}
+
+/* ── TaskList — 완료 섹션 ───────────────────────── */
+.completed-section {
+  margin-top: 0.75rem;
+  border-top: 1px dashed var(--border-color);
+  padding-top: 0.5rem;
+}
+
+.toggle-completed-btn {
+  background: none;
+  border: none;
+  box-shadow: none;
+  font-size: 0.8rem;
+  color: var(--text-color);
+  opacity: 0.6;
+  cursor: pointer;
+  padding: 0.2rem 0;
+  margin: 0;
+}
+
+.toggle-completed-btn:hover { opacity: 1; }
+
+.completed-list {
+  opacity: 0.65;
+}
+
+.task-item--completed {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.clear-completed-btn {
+  font-size: 0.75rem;
+  background: none;
+  box-shadow: none;
+  border: 1px solid #ff4444;
+  color: #ff4444;
+  padding: 0.25rem 0.7rem;
+  margin: 0.4rem 0 0;
+  border-radius: 0.5rem;
+}
+
+.clear-completed-btn:hover {
+  background-color: #ff4444;
+  color: #fff;
+}
+
+/* ── Task — 집중 시작 버튼 ──────────────────────── */
+.focus-button {
+  background-color: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  color: var(--text-color);
+}
+
+.focus-button:hover {
+  background-color: var(--main-color);
+  color: #fff;
+  border-color: var(--main-color);
+}
+
+.focus-button--active {
+  background-color: var(--main-color);
+  color: #fff;
+  border-color: var(--main-color);
+}
+
+.focus-button--active:hover {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+/* ── Task — 집중 중인 항목 강조 ─────────────────── */
+.task-content--active .task-text {
+  font-weight: 600;
+  color: var(--main-color);
+}
+
+.App.dark-mode .task-content--active .task-text {
+  color: #66bb6a;
+}
