@@ -1,18 +1,15 @@
-import React, { useState, lazy, Suspense } from "react";
+import React, { lazy, Suspense } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 
 import SEO from "./components/SEO";
 import Timer from "./components/Timer";
+import { AppProvider, useAppContext } from "./context/AppContext";
 
 const TaskList = lazy(() => import("./components/TaskList"));
 
-function App() {
-  const [darkMode, setDarkMode] = useState(false);
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-  };
+function AppContent() {
+  const { darkMode, toggleDarkMode } = useAppContext();
 
   return (
     <>
@@ -54,6 +51,14 @@ function App() {
         </main>
       </div>
     </>
+  );
+}
+
+function App() {
+  return (
+    <AppProvider>
+      <AppContent />
+    </AppProvider>
   );
 }
 

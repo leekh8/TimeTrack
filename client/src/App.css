@@ -1,25 +1,26 @@
-/* 색상 변수 정의 */
+/* ── 색상 변수 ───────────────────────────────────── */
 :root {
-  --main-color: #4caf50; /* 집중 시간용 색상 */
-  --main-hover-color: #388e3c; /* 버튼 호버 색상 */
-  --accent-color: #ff5722; /* 주요 버튼 색상 */
-  --accent-hover-color: #e64a19; /*주요 버튼 호버 색상*/
-  --reset-color: #ff9800; /* 주요 버튼 색상 */
-  --reset-hover-color: #f57c00; /*주요 버튼 호버 색상*/
-  --text-color: #333333; /* 기본 텍스트 색상 */
-  --background-color: #ffffff; /* 기본 배경색 */
-  --border-color: #dddddd; /* 기본 테두리 색상 */
-  --shadow-color: rgba(0, 0, 0, 0.1); /* 그림자 색상 */
-  --dark-background-color: #121212; /* 다크모드 배경색 */
-  --dark-text-color: #ffffff; /* 다크모드 텍스트 색상 */
+  --main-color: #4caf50;
+  --main-hover-color: #388e3c;
+  --accent-color: #ff5722;
+  --accent-hover-color: #e64a19;
+  --reset-color: #ff9800;
+  --reset-hover-color: #f57c00;
+  --text-color: #333333;
+  --background-color: #ffffff;
+  --border-color: #dddddd;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --dark-background-color: #121212;
+  --dark-text-color: #ffffff;
 }
 
-/* 전역 스타일 */
+/* ── 전역 ────────────────────────────────────────── */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
   background-color: var(--background-color);
   color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
 }
 
 body.dark-mode {
@@ -27,7 +28,7 @@ body.dark-mode {
   color: var(--dark-text-color);
 }
 
-/* 공통 레이아웃 */
+/* ── 앱 레이아웃 ─────────────────────────────────── */
 .App {
   display: flex;
   flex-direction: column;
@@ -37,6 +38,29 @@ body.dark-mode {
   padding: 0 0.5rem;
 }
 
+.App.dark-mode .timer-container,
+.App.dark-mode .task-list,
+.App.dark-mode .modal-content,
+.App.dark-mode .task-item {
+  background-color: #1e1e1e;
+  color: var(--dark-text-color);
+}
+
+.App.dark-mode .task-text,
+.App.dark-mode .task-input,
+.App.dark-mode .task-input-edit {
+  color: var(--dark-text-color);
+  background-color: #2a2a2a;
+  border-color: #444;
+}
+
+.App.dark-mode .modal-input input {
+  background-color: #2a2a2a;
+  color: var(--dark-text-color);
+  border-color: #444;
+}
+
+/* ── 헤더 ───────────────────────────────────────── */
 .header {
   display: flex;
   justify-content: space-between;
@@ -67,16 +91,16 @@ body.dark-mode {
 }
 
 .toggle-button:hover {
-  background-color: var(--border-color);
+  background-color: #444;
 }
 
-/* 메인 컨텐츠 레이아웃 */
+/* ── 메인 컨텐츠 ─────────────────────────────────── */
 .main-content {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   width: 100%;
-  max-width: calc(100%-10vh);
+  max-width: calc(100% - 10vh);
   min-height: 80vh;
   gap: 1.5rem;
 }
@@ -103,10 +127,7 @@ body.dark-mode {
   padding-left: 0;
 }
 
-.timer {
-}
-
-/* Timer button */
+/* ── 공통 버튼 ───────────────────────────────────── */
 button {
   font-size: 1rem;
   color: var(--background-color);
@@ -119,44 +140,36 @@ button {
   transition: all 0.3s ease;
 }
 
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ── 타이머 컨트롤 버튼 ─────────────────────────── */
 .timer-controls {
   margin-top: 1rem;
   padding: 0.25rem;
 }
 
-.start-button {
-  background-color: var(--main-color);
+.timer-status {
+  font-size: 0.85rem;
+  color: var(--main-color);
+  margin: 0.3rem 0 0;
 }
 
-.start-button:hover {
-  background-color: var(--main-hover-color);
-}
+.start-button { background-color: var(--main-color); }
+.start-button:hover { background-color: var(--main-hover-color); }
 
-.pause-button {
-  background-color: var(--accent-color);
-}
+.pause-button { background-color: var(--accent-color); }
+.pause-button:hover:not(:disabled) { background-color: var(--accent-hover-color); }
 
-.pause-button:hover {
-  background-color: var(--accent-hover-color);
-}
+.reset-button { background-color: var(--reset-color); }
+.reset-button:hover { background-color: var(--reset-hover-color); }
 
-.reset-button {
-  background-color: var(--reset-color);
-}
+.set-time-button { background-color: var(--main-color); }
+.set-time-button:hover { background-color: var(--main-hover-color); }
 
-.reset-button:hover {
-  background-color: var(--reset-hover-color);
-}
-
-.set-time-button {
-  background-color: var(--main-color);
-}
-
-.set-time-button:hover {
-  background-color: var(--main-hover-color);
-}
-
-/* Modal 관련 스타일 */
+/* ── 모달 ────────────────────────────────────────── */
 .modal {
   position: fixed;
   top: 0;
@@ -167,18 +180,37 @@ button {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1000;
 }
 
 .modal-content {
   background: var(--background-color);
   border-radius: 1rem;
-  padding: 0.8rem;
-  padding-top: 0.4rem;
-  padding-bottom: 1.6rem;
+  padding: 1rem 1.2rem 1.2rem;
   box-shadow: 0 0.25rem 0.625rem var(--shadow-color);
   width: 18.75rem;
   max-width: 90%;
   position: relative;
+}
+
+/* 모달 헤더: 타이틀 + 닫기 버튼 */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+/* 모달 푸터: 저장 버튼 */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
 }
 
 .modal-input {
@@ -197,6 +229,7 @@ button {
   padding: 0.3125rem;
   border: 0.0625rem solid var(--border-color);
   text-align: center;
+  border-radius: 0.25rem;
 }
 
 .input-with-buttons {
@@ -210,6 +243,7 @@ button {
   text-align: center;
   border: 0.0625rem solid var(--border-color);
   padding: 0.3125rem;
+  border-radius: 0.25rem;
 }
 
 .adjust-button {
@@ -224,55 +258,50 @@ button {
   border-radius: 50%;
   cursor: pointer;
   font-size: 1rem;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
 }
 
-.adjust-button:hover {
-  background-color: var(--main-hover-color);
-}
+.adjust-button:hover { background-color: var(--main-hover-color); }
 
+/* 저장 버튼 — 절대 위치 제거, Flexbox로 정렬 */
 .save-button {
-  width: 1.8rem;
-  height: 1.8rem;
-  background-color: var(--reset-color);
-  color: var(--text-color);
-  font-size: 1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-wrap: nowrap;
+  background-color: var(--main-color);
+  color: var(--background-color);
   border: none;
+  border-radius: 0.5rem;
+  padding: 0.45rem 1.1rem;
+  font-size: 0.95rem;
   cursor: pointer;
-  position: absolute;
-  top: 12.6rem;
-  left: 17.1rem;
+  margin: 0;
+  box-shadow: 0 0.125rem 0.25rem var(--shadow-color);
 }
 
-.save-button:hover {
-  background-color: var(--reset-hover-color);
-}
+.save-button:hover { background-color: var(--main-hover-color); }
 
+/* 닫기 버튼 — 절대 위치 제거, 헤더 내 flex 정렬 */
 .close-button {
   width: 1.8rem;
   height: 1.8rem;
   background-color: var(--accent-color);
-  color: var(--text-color);
-  font-size: 1rem;
+  color: #fff;
+  font-size: 0.85rem;
   display: flex;
   justify-content: center;
   align-items: center;
   border: none;
-  border-radius: 4rem;
+  border-radius: 50%;
   cursor: pointer;
-  position: absolute;
-  top: 1.3rem;
-  left: 17.4rem;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  flex-shrink: 0;
 }
 
-.close-button:hover {
-  background-color: var(--accent-hover-color);
-}
+.close-button:hover { background-color: var(--accent-hover-color); }
 
-/* Task 입력 및 리스트 스타일 */
+/* ── 할 일 입력 ─────────────────────────────────── */
 .task-input-container {
   display: flex;
   justify-content: space-between;
@@ -280,7 +309,6 @@ button {
   gap: 0.625rem;
 }
 
-/* 입력 필드 스타일 */
 .task-input {
   font-size: 1rem;
   padding: 0.6rem 1rem;
@@ -301,9 +329,17 @@ button {
   padding: 0.3125rem;
   width: 100%;
   border-radius: 0.25rem;
+  font-size: 0.95rem;
 }
 
-/* 추가 버튼 스타일 */
+.task-progress {
+  font-size: 0.8rem;
+  color: var(--main-color);
+  margin: 0 0 0.5rem;
+  text-align: right;
+}
+
+/* ── 추가 버튼 ──────────────────────────────────── */
 .add-button {
   font-size: 1rem;
   border: none;
@@ -313,16 +349,14 @@ button {
   transition: all 0.3s ease;
 }
 
-.add-button:hover {
-  background-color: var(--main-hover-color);
-}
+.add-button:hover { background-color: var(--main-hover-color); }
 
 .add-button:disabled {
   background-color: var(--border-color);
   cursor: not-allowed;
 }
 
-/* Task 리스트 아이템 */
+/* ── 할 일 아이템 ───────────────────────────────── */
 .task-item {
   display: flex;
   align-items: center;
@@ -343,43 +377,44 @@ button {
   transform: scale(1.02);
 }
 
-/* Task 텍스트 */
-.task-text {
-  font-size: 1rem;
-  color: var(--text-color);
-  flex-grow: 1;
-  margin-right: 1.2rem;
-  margin-left: 0.5rem;
-  word-wrap: break-word;
-  white-space: normal;
-  overflow-wrap: break-word;
-  max-width: calc(100% - 10.5rem);
-  cursor: pointer;
+.task-empty {
+  text-align: center;
+  color: var(--border-color);
+  list-style: none;
+  padding: 1rem 0;
+  font-size: 0.95rem;
 }
 
+/* task-content: display:contents → display:flex (접근성 개선) */
 .task-content {
-  display: contents;
+  display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 0.2rem;
-  margin-bottom: 0.625rem;
-  border-radius: 0.625rem;
-  background-color: transparent;
-  min-height: 2rem;
+  width: 100%;
+  gap: 0.3rem;
   cursor: pointer;
 }
 
 .task-content.completed .task-text {
   text-decoration: line-through;
-  border-radius: 0.625rem;
-  background-color: var(--accent-hover-color);
-  opacity: 0.6;
+  opacity: 0.55;
 }
 
-/* 체크박스 */
+/* ── Task 텍스트 ─────────────────────────────────── */
+.task-text {
+  font-size: 1rem;
+  color: var(--text-color);
+  flex-grow: 1;
+  margin: 0 0.5rem;
+  word-wrap: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
+  cursor: pointer;
+}
+
+/* ── 체크박스 ───────────────────────────────────── */
 .task-checkbox {
-  margin-right: 0.625rem;
-  border-radius: 0.625rem;
+  flex-shrink: 0;
+  margin-right: 0.2rem;
 }
 
 .task-checkbox input[type="checkbox"] {
@@ -389,16 +424,14 @@ button {
   cursor: pointer;
 }
 
-/* Task 버튼 그룹 */
+/* ── Task 버튼 그룹 ─────────────────────────────── */
 .task-buttons {
   display: flex;
   gap: 0.2rem;
   justify-content: flex-end;
   flex-shrink: 0;
-  cursor: pointer;
 }
 
-/* Task 버튼 스타일 */
 .task-buttons button {
   background-color: transparent;
   border: 0.0625rem solid var(--border-color);
@@ -410,72 +443,42 @@ button {
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
-}
-
-.task-buttons button:hover {
-  background-color: var(--main-color);
-  color: var(--dark-text-color);
-  border: none;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  color: var(--text-color);
 }
 
 .task-buttons .edit-button:hover {
   background-color: #ff9800;
+  color: #fff;
+  border-color: #ff9800;
 }
 
 .task-buttons .delete-button:hover {
   background-color: #ff4444;
+  color: #fff;
+  border-color: #ff4444;
 }
 
-.edit-button,
-.delete-button {
-  background-color: transparent;
-  color: var(--text-color);
-  border: none;
-  cursor: pointer;
-  padding: 0.3125rem;
-  font-size: 0.875rem;
-}
-
-.edit-button:hover {
-  color: var(--main-color);
-}
-
-.delete-button:hover {
-  color: #ff4444;
-}
-
-.task-input {
-  font-size: 1rem;
-  padding: 0.625rem 0.9375rem;
-  width: calc(100% - 6.25rem);
-}
-
-.task-input {
-  font-size: 1rem;
-  padding: 0.6rem 1rem;
-  width: calc(100% - 5rem);
-}
-
-/* 큰 화면 (데스크톱) */
+/* ── 반응형 — 데스크톱 ──────────────────────────── */
 @media (min-width: 1024px) {
-  html {
-    font-size: 1.2rem;
-  }
+  html { font-size: 1.2rem; }
 
   .main-content {
     flex-direction: row;
     gap: 2rem;
   }
+
   .timer-container,
   .task-list {
     max-width: 45%;
   }
 }
 
+/* ── 반응형 — 태블릿 ────────────────────────────── */
 @media (max-width: 768px) {
-  html {
-    font-size: 0.8rem;
-  }
+  html { font-size: 0.8rem; }
 
   .main-content {
     flex-direction: column;
@@ -489,7 +492,6 @@ button {
   }
 
   .timer-controls {
-    min-width: calc(100vh - 1rem);
     text-align: center;
   }
 
@@ -511,34 +513,27 @@ button {
   .task-input {
     width: 95%;
   }
-
-  .task-text {
-    margin-right: 0;
-  }
-
-  .add-button {
-    margin-top: 0.625rem;
-  }
-
-  .task-checkbox {
-  }
 }
 
-/* 작은 화면 (작은 휴대폰) */
+/* ── 반응형 — 소형 휴대폰 ──────────────────────── */
 @media (max-width: 480px) {
-  html {
-    font-size: 0.6rem;
-  }
+  html { font-size: 0.6rem; }
 
   .main-content {
     flex-direction: column;
     align-items: stretch;
   }
+
   .timer-container,
   .task-list {
     max-width: 100%;
   }
+
   .task-input {
     font-size: 0.8rem;
+  }
+
+  .modal-content {
+    width: 90vw;
   }
 }
