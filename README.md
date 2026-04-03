@@ -1,124 +1,156 @@
 # TimeTrack
 
-TimeTrack은 Pomodoro 타이머와 할 일 목록 관리 기능을 결합한 웹 애플리케이션입니다.
+Pomodoro 타이머와 할 일 목록을 결합한 집중력 향상 웹 앱입니다.
 
-이 애플리케이션은 사용자가 작업을 효율적으로 관리하고 집중력을 높일 수 있도록 돕습니다.
+🔗 **라이브 데모**: https://time-track-psi.vercel.app/
 
-타이머와 할 일 목록 기능을 통합하여 학생, 직장인 등 다양한 사용자들이 반복적으로 사용할 수 있도록 설계되었습다.
+---
+
+## 주요 기능
+
+### 타이머
+- 집중 시간 / 휴식 시간 / 반복 횟수 자유 설정 (기본 25분 + 5분 × 1회)
+- 집중 → 휴식 → 집중 자동 사이클 전환
+- 브라우저 탭 타이틀에 남은 시간 실시간 표시 (`⏱ 23:45 집중 중`)
+- 사이클 완료 시 비프음 + 브라우저 알림 (Notification API)
+- 배경음 선택: 없음 / 화이트노이즈 / 브라운노이즈 (집중 중에만 재생)
+- 오늘 집중 시간·완료 사이클 수 하단 표시 (30일치 누적 저장)
+
+### 할 일 목록
+- 할 일 추가 / 수정 / 삭제 / 완료 체크
+- 드래그 앤 드롭으로 순서 변경
+- 완료 항목 접기/펼치기 분리, 일괄 삭제
+- 진행률 바로 완료 비율 시각화
+- **집중 시작(▶) 버튼**: 특정 Task 선택 시 타이머 상단에 현재 집중 Task 표시
+
+### 편의 기능
+- 키보드 단축키: `Space` 시작/일시정지 · `R` 초기화 · `N` 할 일 입력 포커스
+- 다크 모드 (설정 localStorage 저장, 새로고침 후에도 유지)
+- 모든 설정·할 일 목록 localStorage 자동 저장
+
+---
+
+## 기술 스택
+
+| 영역 | 사용 기술 |
+|---|---|
+| 프론트엔드 | React 18, Context API, react-beautiful-dnd, react-circular-progressbar |
+| 백엔드 | Node.js, Express |
+| 스타일 | CSS (CSS Variables, Flexbox, 반응형) |
+| 배포 | Vercel (클라이언트) |
+| 오디오 | Web Audio API |
+| 알림 | Notification API |
+
+---
 
 ## 프로젝트 구조
 
-이 프로젝트는 `client`와 `server` 디렉토리로 나뉘어 있으며, 각각 React.js와 Node.js를 사용하여 개발되었습니다.
-
-```bash
+```
 TimeTrack/
-├── client/ # React.js 클라이언트
-│ ├── public/ # 정적 파일
-│ ├── src/ # React 컴포넌트, 스타일 파일 등
-│ └── package.json # 클라이언트 종속성과 스크립트
-├── server/ # Node.js 서버
-│ ├── app.js # 서버 엔트리 포인트
-│ ├── routes/ # API 라우트 파일
-│ └── package.json # 서버 종속성과 스크립트
-└── README.md # 프로젝트 설명 파일
+├── client/                          # React 클라이언트
+│   ├── public/
+│   └── src/
+│       ├── api/
+│       │   └── tasks.js             # 서버 API 클라이언트 (localStorage fallback)
+│       ├── components/
+│       │   ├── Timer.js             # Pomodoro 타이머
+│       │   ├── TaskList.js          # 할 일 목록
+│       │   ├── Task.js              # 개별 할 일 항목
+│       │   └── SEO.js               # 메타 태그
+│       ├── context/
+│       │   └── AppContext.js        # 전역 상태 (다크모드, activeTask, 통계)
+│       ├── App.js
+│       └── App.css
+├── server/                          # Express 백엔드
+│   ├── app.js                       # REST API (tasks CRUD)
+│   └── package.json
+└── README.md
 ```
 
-## 기능 소개
+---
 
-- **Pomodoro 타이머**: 25분 집중 + 5분 휴식 시간을 제공하며, 타이머가 완료될 때 알림을 표시합니다.
-- **할 일 목록 관리**: 할 일을 추가, 삭제, 수정할 수 있으며, 완료한 할 일을 표시할 수 있습니다.
-- **통계 기능** (추가 예정): 완료한 작업 수, 집중 시간 등을 기록하여 사용자의 성과를 시각화합니다.
-
-## 설치 및 실행 방법
+## 로컬 실행
 
 ### 사전 요구 사항
+- Node.js 18+
+- Git
 
-- [Node.js](https://nodejs.org/) 설치
-- [Git](https://git-scm.com/) 설치
-
-### 1. 레포지토리 클론
-
-```bash
-  git clone https://github.com/yourusername/TimeTrack.git
-  cd TimeTrack
-```
-
-### 2. 클라이언트 설정 및 실행
-
-#### 1. client 디렉토리로 이동
+### 클라이언트
 
 ```bash
-  cd client
-```
-
-#### 2. 의존성을 설치
-
-```bash
+git clone https://github.com/leekh8/TimeTrack.git
+cd TimeTrack/client
 npm install
-```
-
-#### 3. React 개발 서버를 실행
-
-```bash
 npm start
+# → http://localhost:3000
 ```
 
-개발 서버가 http://localhost:3000에서 실행된다.
-
-### 3. 서버 설정 및 실행
-
-#### 1. server 디렉토리로 이동
+### 서버 (선택 — 다기기 동기화 시 필요)
 
 ```bash
-cd ../server
-```
-
-#### 2. 의존성을 설치
-
-```bash
+cd TimeTrack/server
 npm install
-```
-
-#### 3. Node 서버를 실행
-
-```bash
 npm run dev
+# → http://localhost:5000
 ```
 
-서버가 http://localhost:5000에서 실행된다.
+서버 없이도 클라이언트는 localStorage만으로 정상 동작합니다.
+
+### 환경 변수 (선택)
+
+`client/.env` 파일 생성:
+
+```env
+REACT_APP_API_URL=http://localhost:5000
+```
+
+---
 
 ## API 엔드포인트
 
-### 기본 엔드포인트
+서버(`server/app.js`)가 제공하는 REST API입니다.
 
-- GET /: 서버 상태 확인
+| 메서드 | 경로 | 설명 |
+|---|---|---|
+| GET | `/` | 서버 상태 확인 |
+| GET | `/tasks` | 할 일 목록 전체 조회 |
+| POST | `/tasks` | 할 일 추가 `{ text }` |
+| PUT | `/tasks/:id` | 할 일 수정 `{ text?, completed? }` |
+| PUT | `/tasks/reorder` | 드래그 순서 반영 `{ orderedIds }` |
+| DELETE | `/tasks/:id` | 할 일 삭제 |
+| DELETE | `/tasks` | 완료된 항목 전체 삭제 |
 
-### 할 일 목록 API (예시)
+> 현재 서버는 인메모리 저장 방식입니다. 재시작 시 데이터가 초기화되므로 운영 환경에서는 DB 연동이 필요합니다.
 
-- POST /tasks: 새 할 일 추가
-- GET /tasks: 모든 할 일 조회
-- PUT /tasks/:id: 특정 할 일 수정
-- DELETE /tasks/:id: 특정 할 일 삭제
+---
 
-## GitHub Actions로 배포
+## 키보드 단축키
 
-이 프로젝트는 GitHub Actions를 통해 자동 배포가 설정되어 있습니다.
+| 키 | 동작 |
+|---|---|
+| `Space` | 타이머 시작 / 일시정지 |
+| `R` | 타이머 초기화 |
+| `N` | 할 일 입력창 포커스 |
 
-Actions를 통해 클라이언트와 서버가 빌드되고, 자동으로 지정된 호스팅 서비스에 배포됩니다.
+입력 필드 또는 모달이 열려 있을 때는 단축키가 비활성화됩니다.
 
-자세한 내용은 `.github/workflows` 폴더에서 확인할 수 있습니다.
+---
 
-## 사용 기술
+## 배포
 
-- **클라이언트**: React.js, CSS
-- **서버**: Node.js, Express
-- **데이터베이스** (추가 가능): MongoDB
-- **배포**: GitHub Actions
+클라이언트는 Vercel에 자동 배포됩니다. `main` 브랜치에 push하면 CD 워크플로우가 트리거됩니다.
+
+```bash
+# 빌드 확인
+cd client && npm run build
+```
+
+---
 
 ## 기여 방법
 
-1. 이 레포지토리를 포크합니다.
-2. 새로운 브랜치를 생성합니다: `git checkout -b feature/my-new-feature`
-3. 변경 사항을 커밋합니다: `git commit -am 'Add new feature'`
-4. 브랜치에 푸시합니다: `git push origin feature/my-new-feature`
+1. 레포지토리를 포크합니다.
+2. 브랜치를 생성합니다: `git checkout -b feature/my-feature`
+3. 변경 사항을 커밋합니다: `git commit -m "feat: 설명"`
+4. 브랜치에 푸시합니다: `git push origin feature/my-feature`
 5. Pull Request를 생성합니다.
