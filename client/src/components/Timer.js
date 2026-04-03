@@ -66,7 +66,7 @@ const sendNotif = (title, body) => {
 
 // ──────────────────────────────────────────────────────
 const Timer = () => {
-  const { darkMode, activeTask, todayStats, recordFocusCycle } = useAppContext();
+  const { darkMode, activeTask, todayStats, recordFocusCycle, registerTimerControl } = useAppContext();
   const saved = loadSettings();
 
   const [focusTime, setFocusTime] = useState(saved.focusTime);
@@ -85,6 +85,16 @@ const Timer = () => {
   // 최신 상태를 ref로 관리 (interval / 이벤트 핸들러에서 stale closure 방지)
   const stateRef = useRef({});
   stateRef.current = { isBreak, focusTime, breakTime, currentCycle, repeatCycles };
+
+  // start/reset을 Context에 등록 — Task ▶ 버튼이 직접 호출
+  const timerFnRef = useRef({});
+  timerFnRef.current = { startTimer, resetTimer };
+  useEffect(() => {
+    registerTimerControl(
+      () => timerFnRef.current.startTimer(),
+      () => timerFnRef.current.resetTimer()
+    );
+  }, [registerTimerControl]);
 
   const audioCtxRef = useRef(null);
   const noiseSourceRef = useRef(null);

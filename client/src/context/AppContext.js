@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 
 const AppContext = createContext(null);
 
@@ -20,6 +20,18 @@ export const AppProvider = ({ children }) => {
 
   // 현재 집중 중인 Task — Timer와 TaskList 공유
   const [activeTask, setActiveTask] = useState(null); // { id, text } | null
+
+  // Timer가 자신의 start/reset 함수를 여기에 등록 → Task에서 직접 호출 가능
+  const timerControlRef = useRef({ start: null, reset: null });
+  const registerTimerControl = useCallback((start, reset) => {
+    timerControlRef.current = { start, reset };
+  }, []);
+
+  // Task ▶ 클릭 → activeTask 설정 + 타이머 즉시 시작
+  const focusOnTask = useCallback((task) => {
+    setActiveTask(task);
+    if (task) timerControlRef.current.start?.();
+  }, []);
 
   // 오늘 집중 통계 — 리렌더 트리거용 state
   const [todayStats, setTodayStats] = useState(readTodayStats);
@@ -59,6 +71,8 @@ export const AppProvider = ({ children }) => {
         toggleDarkMode,
         activeTask,
         setActiveTask,
+        focusOnTask,
+        registerTimerControl,
         todayStats,
         recordFocusCycle,
       }}

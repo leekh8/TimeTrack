@@ -5,7 +5,7 @@ import { FaPlay, FaStop } from "react-icons/fa";
 import { useAppContext } from "../context/AppContext";
 
 const Task = memo(({ task, toggleTaskCompletion, updateTask, deleteTask }) => {
-  const { activeTask, setActiveTask } = useAppContext();
+  const { activeTask, setActiveTask, focusOnTask } = useAppContext();
   const [isEditing, setIsEditing] = useState(false);
   const [newText, setNewText] = useState(task.text);
 
@@ -31,7 +31,11 @@ const Task = memo(({ task, toggleTaskCompletion, updateTask, deleteTask }) => {
 
   const handleFocusToggle = (e) => {
     e.stopPropagation();
-    setActiveTask(isActiveTask ? null : { id: task.id, text: task.text });
+    if (isActiveTask) {
+      setActiveTask(null); // 해제만 — 타이머는 계속 실행
+    } else {
+      focusOnTask({ id: task.id, text: task.text }); // 설정 + 타이머 즉시 시작
+    }
   };
 
   return (
