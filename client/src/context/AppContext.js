@@ -17,24 +17,16 @@ export const AppProvider = ({ children }) => {
   const [darkMode, setDarkMode] = useState(
     () => localStorage.getItem("timetrack-darkmode") === "true"
   );
-
-  // 현재 집중 중인 Task — Timer와 TaskList 공유
   const [activeTask, setActiveTask] = useState(null); // { id, text } | null
-
-  // Timer가 자신의 start/reset 함수를 여기에 등록 → Task에서 직접 호출 가능
-  const timerControlRef = useRef({ start: null, reset: null });
-  const registerTimerControl = useCallback((start, reset) => {
-    timerControlRef.current = { start, reset };
-  }, []);
-
-  // Task ▶ 클릭 → activeTask 설정 + 타이머 즉시 시작
-  const focusOnTask = useCallback((task) => {
-    setActiveTask(task);
-    if (task) timerControlRef.current.start?.();
-  }, []);
-
-  // 오늘 집중 통계 — 리렌더 트리거용 state
   const [todayStats, setTodayStats] = useState(readTodayStats);
+
+  // Timer가 자신의 제어 함수를 여기에 등록
+  // { start, reset, pauseIfActive } — Task/Context에서 직접 호출
+  const timerControlRef = useRef({ start: null, reset: null, pauseIfActive: null });
+
+  const registerTimerControl = useCallback((controls) => {
+    timerControlRef.current = { ...timerControlRef.current, ...controls };
+  }, []);
 
   useEffect(() => {
     document.body.classList.toggle("dark-mode", darkMode);
@@ -42,6 +34,18 @@ export const AppProvider = ({ children }) => {
   }, [darkMode]);
 
   const toggleDarkMode = () => setDarkMode((d) => !d);
+
+  // ▶ 클릭: activeTask 설정 + 타이머 즉시 시작
+  const focusOnTask = useCallback((task) => {
+    setActiveTask(task);
+    if (task) timerControlRef.current.start?.();
+  }, []);
+
+  // ■ 클릭: activeTask 해제 + 타이머가 실행 중이면 일시정지
+  const unfocusTask = useCallback(() => {
+    setActiveTask(null);
+    timerControlRef.current.pauseIfActive?.();
+  }, []);
 
   // 집중 사이클 1회 완료 시 호출
   const recordFocusCycle = useCallback((focusMinutes) => {
@@ -55,7 +59,6 @@ export const AppProvider = ({ children }) => {
       } else {
         stats.push({ date: today, focusMinutes, cycles: 1 });
       }
-      // 최근 30일만 유지
       const cutoff = new Date();
       cutoff.setDate(cutoff.getDate() - 30);
       const trimmed = stats.filter((s) => new Date(s.date) >= cutoff);
@@ -72,6 +75,7 @@ export const AppProvider = ({ children }) => {
         activeTask,
         setActiveTask,
         focusOnTask,
+        unfocusTask,
         registerTimerControl,
         todayStats,
         recordFocusCycle,

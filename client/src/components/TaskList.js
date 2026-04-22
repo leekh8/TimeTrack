@@ -105,11 +105,13 @@ const TaskList = () => {
 
       {/* 진행률 */}
       {tasks.length > 0 && (
-        <div className="task-progress-bar-wrap">
-          <div
-            className="task-progress-bar"
-            style={{ width: `${tasks.length ? (completedTasks.length / tasks.length) * 100 : 0}%` }}
-          />
+        <div className="task-progress-wrap">
+          <div className="task-progress-track">
+            <div
+              className="task-progress-bar"
+              style={{ width: `${(completedTasks.length / tasks.length) * 100}%` }}
+            />
+          </div>
           <span className="task-progress-label">
             {completedTasks.length} / {tasks.length} 완료
           </span>

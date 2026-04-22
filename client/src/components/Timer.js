@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { FaClock, FaRecycle, FaBed, FaVolumeUp, FaVolumeMute } from "react-icons/fa";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import "../App.css";
 import { useAppContext } from "../context/AppContext";
 
+// ── 상수 ─────────────────────────────────────────────
 const DEFAULTS = { focusTime: 25, breakTime: 5, repeatCycles: 1 };
 
 const loadSettings = () => {
@@ -16,7 +17,7 @@ const loadSettings = () => {
   }
 };
 
-// ── 오디오 유틸 ──────────────────────────────────────
+// ── 오디오 유틸 ───────────────────────────────────────
 const playBeep = () => {
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
   if (!AudioCtx) return;
@@ -39,7 +40,6 @@ const buildNoiseBuffer = (audioCtx, type) => {
   if (type === "white") {
     for (let i = 0; i < size; i++) data[i] = Math.random() * 2 - 1;
   } else {
-    // brown noise
     let last = 0;
     for (let i = 0; i < size; i++) {
       const w = Math.random() * 2 - 1;
@@ -64,42 +64,88 @@ const sendNotif = (title, body) => {
   }
 };
 
-// ──────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────
 const Timer = () => {
-  const { darkMode, activeTask, todayStats, recordFocusCycle, registerTimerControl } = useAppContext();
-  const saved = loadSettings();
+  const {
+    darkMode,
+    activeTask,
+    setActiveTask,
+    todayStats,
+    recordFocusCycle,
+    registerTimerControl,
+  } = useAppContext();
 
-  const [focusTime, setFocusTime] = useState(saved.focusTime);
-  const [breakTime, setBreakTime] = useState(saved.breakTime);
+  const saved = loadSettings();
+  const [focusTime, setFocusTime]       = useState(saved.focusTime);
+  const [breakTime, setBreakTime]       = useState(saved.breakTime);
   const [repeatCycles, setRepeatCycles] = useState(saved.repeatCycles);
-  const [time, setTime] = useState(saved.focusTime * 60);
-  const [isActive, setIsActive] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const [isBreak, setIsBreak] = useState(false);
+  const [time, setTime]                 = useState(saved.focusTime * 60);
+  const [isActive, setIsActive]         = useState(false);
+  const [isPaused, setIsPaused]         = useState(false);
+  const [isBreak, setIsBreak]           = useState(false);
   const [currentCycle, setCurrentCycle] = useState(0);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [soundMode, setSoundMode] = useState(
+  const [isModalOpen, setIsModalOpen]   = useState(false);
+  const [soundMode, setSoundMode]       = useState(
     () => localStorage.getItem("timetrack-sound") || "off"
   );
 
-  // 최신 상태를 ref로 관리 (interval / 이벤트 핸들러에서 stale closure 방지)
+  // 최신 상태를 ref로 노출 — interval/이벤트 핸들러의 stale closure 방지
   const stateRef = useRef({});
-  stateRef.current = { isBreak, focusTime, breakTime, currentCycle, repeatCycles };
+  stateRef.current = { isBreak, focusTime, breakTime, currentCycle, repeatCycles, isActive, isPaused };
 
-  // start/reset을 Context에 등록 — Task ▶ 버튼이 직접 호출
-  const timerFnRef = useRef({});
-  timerFnRef.current = { startTimer, resetTimer };
-  useEffect(() => {
-    registerTimerControl(
-      () => timerFnRef.current.startTimer(),
-      () => timerFnRef.current.resetTimer()
-    );
-  }, [registerTimerControl]);
-
-  const audioCtxRef = useRef(null);
+  const audioCtxRef    = useRef(null);
   const noiseSourceRef = useRef(null);
 
-  // ── 설정 저장 ─────────────────────────────────────
+  // ── 배경음 정지 (useCallback: ref만 참조하므로 deps 없음) ──
+  const stopNoise = useCallback(() => {
+    if (noiseSourceRef.current) {
+      try { noiseSourceRef.current.stop(); } catch {}
+      noiseSourceRef.current = null;
+    }
+    if (audioCtxRef.current) {
+      try { audioCtxRef.current.close(); } catch {}
+      audioCtxRef.current = null;
+    }
+  }, []);
+
+  // ── 타이머 제어 함수 ─────────────────────────────────
+  const startTimer = useCallback(() => {
+    requestNotifPermission();
+    const { focusTime: ft } = stateRef.current;
+    setTime(ft * 60);
+    setIsBreak(false);
+    setCurrentCycle(0);
+    setIsActive(true);
+    setIsPaused(false);
+  }, []);
+
+  const pauseTimer = useCallback(() => {
+    setIsPaused((p) => !p);
+  }, []);
+
+  // Bug 2 수정: 완전한 초기화 — isBreak·currentCycle 포함, 항상 집중 시간으로 복귀
+  const resetTimer = useCallback(() => {
+    stopNoise();
+    const { focusTime: ft } = stateRef.current;
+    setIsActive(false);
+    setIsPaused(false);
+    setIsBreak(false);
+    setCurrentCycle(0);
+    setTime(ft * 60);
+  }, [stopNoise]);
+
+  // Bug 1 수정: pauseIfActive — 실행 중일 때만 일시정지 (토글 X)
+  const pauseIfActive = useCallback(() => {
+    const { isActive: active, isPaused: paused } = stateRef.current;
+    if (active && !paused) setIsPaused(true);
+  }, []);
+
+  // Context에 제어 함수 등록 — Task ▶/■ 가 직접 호출
+  useEffect(() => {
+    registerTimerControl({ start: startTimer, reset: resetTimer, pauseIfActive });
+  }, [registerTimerControl, startTimer, resetTimer, pauseIfActive]);
+
+  // ── localStorage 저장 ────────────────────────────────
   useEffect(() => {
     localStorage.setItem("timetrack-settings", JSON.stringify({ focusTime, breakTime, repeatCycles }));
   }, [focusTime, breakTime, repeatCycles]);
@@ -108,7 +154,14 @@ const Timer = () => {
     localStorage.setItem("timetrack-sound", soundMode);
   }, [soundMode]);
 
-  // ── 탭 타이틀 업데이트 ────────────────────────────
+  // ── 비활성 상태에서 설정 변경 → 표시 시간 즉시 반영 ──
+  useEffect(() => {
+    if (!isActive) {
+      setTime(isBreak ? breakTime * 60 : focusTime * 60);
+    }
+  }, [focusTime, breakTime, isBreak, isActive]);
+
+  // ── 탭 타이틀 업데이트 ───────────────────────────────
   useEffect(() => {
     if (!isActive) {
       document.title = "TimeTrack";
@@ -122,14 +175,7 @@ const Timer = () => {
     return () => { document.title = "TimeTrack"; };
   }, [time, isActive, isBreak]);
 
-  // ── 타이머 비활성 시 설정 변경 → 표시 시간 반영 ──
-  useEffect(() => {
-    if (!isActive) {
-      setTime(isBreak ? breakTime * 60 : focusTime * 60);
-    }
-  }, [focusTime, breakTime, isBreak, isActive]);
-
-  // ── 1초 감소 (isActive/isPaused 변경 시에만 interval 재생성) ──
+  // ── 1초 감소 — isActive/isPaused 변경 시에만 interval 재생성 ──
   useEffect(() => {
     if (!isActive || isPaused) return;
     const interval = setInterval(() => {
@@ -138,55 +184,48 @@ const Timer = () => {
     return () => clearInterval(interval);
   }, [isActive, isPaused]);
 
-  // ── time === 0 → 페이즈 전환 ──────────────────────
+  // ── time === 0 → 페이즈 전환 ────────────────────────
   useEffect(() => {
     if (!isActive || time !== 0) return;
+
     const { isBreak: br, focusTime: ft, breakTime: bt, currentCycle: cc, repeatCycles: rc } =
       stateRef.current;
 
     playBeep();
 
-    if (!br) {
-      // 집중 완료 → 통계 기록
-      recordFocusCycle(ft);
-      sendNotif("집중 완료! ☕", `${ft}분 집중을 마쳤습니다. 잠깐 쉬어가세요.`);
-    }
-
     if (br) {
+      // 휴식 종료 → 집중 재개
       setIsBreak(false);
       setCurrentCycle((c) => c + 1);
       setTime(ft * 60);
       sendNotif("휴식 종료! ⏱", "다시 집중할 시간입니다.");
     } else if (cc >= rc - 1) {
+      // Bug 3 수정: 모든 사이클 완료 → activeTask도 해제
+      recordFocusCycle(ft);
+      sendNotif("모든 사이클 완료! 🎉", `총 ${rc}사이클을 마쳤습니다.`);
       setIsActive(false);
       setIsPaused(false);
+      setIsBreak(false);
       setCurrentCycle(0);
       setTime(ft * 60);
-      sendNotif("모든 사이클 완료! 🎉", `총 ${rc}사이클을 마쳤습니다.`);
+      setActiveTask(null);
     } else {
+      // 집중 종료 → 휴식 시작
+      recordFocusCycle(ft);
+      sendNotif("집중 완료! ☕", `${ft}분 집중을 마쳤습니다. 잠깐 쉬어가세요.`);
       setIsBreak(true);
       setTime(bt * 60);
     }
-  }, [time, isActive, recordFocusCycle]);
+  }, [time, isActive, recordFocusCycle, setActiveTask]);
 
-  // ── 배경음 제어 ───────────────────────────────────
-  const stopNoise = () => {
-    if (noiseSourceRef.current) {
-      try { noiseSourceRef.current.stop(); } catch {}
-      noiseSourceRef.current = null;
-    }
-    if (audioCtxRef.current) {
-      try { audioCtxRef.current.close(); } catch {}
-      audioCtxRef.current = null;
-    }
-  };
-
+  // ── 배경음 재생/정지 ─────────────────────────────────
   useEffect(() => {
     const shouldPlay = isActive && !isPaused && !isBreak && soundMode !== "off";
     if (!shouldPlay) { stopNoise(); return; }
 
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     if (!AudioCtx) return;
+
     const ctx = new AudioCtx();
     audioCtxRef.current = ctx;
 
@@ -202,11 +241,11 @@ const Timer = () => {
     noiseSourceRef.current = source;
 
     return () => stopNoise();
-  }, [isActive, isPaused, isBreak, soundMode]);
+  }, [isActive, isPaused, isBreak, soundMode, stopNoise]);
 
-  // ── 키보드 단축키 (Space / R) ─────────────────────
+  // ── 키보드 단축키 (Space / R) — 한 번만 등록 ─────────
   const actionsRef = useRef({});
-  actionsRef.current = { isActive, isPaused, isModalOpen, startTimer, pauseTimer, resetTimer };
+  actionsRef.current = { startTimer, pauseTimer, resetTimer, isModalOpen };
 
   useEffect(() => {
     const handleKey = (e) => {
@@ -216,7 +255,8 @@ const Timer = () => {
 
       if (e.code === "Space") {
         e.preventDefault();
-        if (!actionsRef.current.isActive) actionsRef.current.startTimer();
+        const { isActive: active } = stateRef.current;
+        if (!active) actionsRef.current.startTimer();
         else actionsRef.current.pauseTimer();
       }
       if (e.code === "KeyR" && !e.ctrlKey && !e.metaKey) {
@@ -225,63 +265,44 @@ const Timer = () => {
     };
     document.addEventListener("keydown", handleKey);
     return () => document.removeEventListener("keydown", handleKey);
-  }, []); // 한 번만 등록
+  }, []);
 
-  // ──────────────────────────────────────────────────
-  function startTimer() {
-    requestNotifPermission();
-    setTime(focusTime * 60);
-    setIsBreak(false);
-    setCurrentCycle(0);
-    setIsActive(true);
-    setIsPaused(false);
-  }
-  function pauseTimer() { setIsPaused((p) => !p); }
-  function resetTimer() {
-    stopNoise();
-    setTime(isBreak ? breakTime * 60 : focusTime * 60);
-    setIsActive(false);
-    setIsPaused(false);
-  }
-
-  const openModal = () => setIsModalOpen(true);
+  // ── 모달 ─────────────────────────────────────────────
+  const openModal  = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
-  const handleOutsideClick = (e) => { if (e.target.classList.contains("modal")) closeModal(); };
+  const handleOutsideClick = (e) => {
+    if (e.target.classList.contains("modal")) closeModal();
+  };
 
   const adjustValue = (setter, value, delta, min, max) => {
     const next = value + delta;
     if (next >= min && next <= max) setter(next);
   };
 
-  const totalTime = isBreak ? breakTime * 60 : focusTime * 60;
+  // ── 렌더 계산 ────────────────────────────────────────
+  const totalTime  = isBreak ? breakTime * 60 : focusTime * 60;
   const percentage = totalTime > 0 ? ((totalTime - time) / totalTime) * 100 : 0;
-
   const formatMins = (mins) =>
     mins >= 60 ? `${Math.floor(mins / 60)}h ${mins % 60}m` : `${mins}m`;
 
   return (
     <div className="timer-container">
-      {/* 현재 집중 중인 Task */}
       {activeTask && (
-        <div className="timer-active-task">
-          ⏱ {activeTask.text}
-        </div>
+        <div className="timer-active-task">⏱ {activeTask.text}</div>
       )}
 
-      {/* 원형 타이머 */}
       <div className="timer">
         <CircularProgressbar
           value={percentage}
           text={`${Math.floor(time / 60)}:${String(time % 60).padStart(2, "0")}`}
           styles={buildStyles({
-            textColor: darkMode ? "#ffffff" : "#333333",
-            pathColor: isBreak ? "#ff5722" : "#4caf50",
+            textColor:  darkMode ? "#ffffff" : "#333333",
+            pathColor:  isBreak ? "#ff5722" : "#4caf50",
             trailColor: darkMode ? "#3a3a3a" : "#eeeeee",
           })}
         />
       </div>
 
-      {/* 사이클 상태 */}
       {isActive && (
         <p className="timer-status">
           {isBreak
@@ -290,7 +311,6 @@ const Timer = () => {
         </p>
       )}
 
-      {/* 컨트롤 버튼 */}
       <div className="timer-controls">
         <button className="start-button" onClick={startTimer}>
           {isActive ? "재시작" : "시작"}
@@ -298,17 +318,14 @@ const Timer = () => {
         <button className="pause-button" onClick={pauseTimer} disabled={!isActive}>
           {isPaused ? "계속" : "일시정지"}
         </button>
-        <button className="reset-button" onClick={resetTimer}>
-          초기화
-        </button>
-        <button className="set-time-button" onClick={openModal}>
-          시간 설정
-        </button>
+        <button className="reset-button" onClick={resetTimer}>초기화</button>
+        <button className="set-time-button" onClick={openModal}>시간 설정</button>
       </div>
 
-      {/* 배경음 선택 */}
       <div className="sound-controls">
-        {soundMode === "off" ? <FaVolumeMute className="sound-icon" /> : <FaVolumeUp className="sound-icon" />}
+        {soundMode === "off"
+          ? <FaVolumeMute className="sound-icon" />
+          : <FaVolumeUp   className="sound-icon" />}
         <select
           className="sound-select"
           value={soundMode}
@@ -321,17 +338,14 @@ const Timer = () => {
         </select>
       </div>
 
-      {/* 오늘 통계 */}
       <div className="timer-stats">
         <span>오늘 집중 {formatMins(todayStats.focusMinutes)}</span>
         <span className="stats-sep">·</span>
         <span>{todayStats.cycles}사이클</span>
       </div>
 
-      {/* 단축키 안내 */}
       <p className="shortcut-hint">Space: 시작/일시정지 · R: 초기화</p>
 
-      {/* 설정 모달 */}
       {isModalOpen && (
         <div className="modal" onClick={handleOutsideClick}>
           <div className="modal-content">
@@ -345,7 +359,7 @@ const Timer = () => {
               <div className="input-with-buttons">
                 <button className="adjust-button" onClick={() => adjustValue(setFocusTime, focusTime, -5, 5, 60)}>-</button>
                 <input type="number" value={focusTime} onChange={(e) => setFocusTime(Number(e.target.value))} min="1" max="60" />
-                <button className="adjust-button" onClick={() => adjustValue(setFocusTime, focusTime, 5, 5, 60)}>+</button>
+                <button className="adjust-button" onClick={() => adjustValue(setFocusTime, focusTime,  5, 5, 60)}>+</button>
               </div>
             </div>
 
@@ -354,7 +368,7 @@ const Timer = () => {
               <div className="input-with-buttons">
                 <button className="adjust-button" onClick={() => adjustValue(setBreakTime, breakTime, -5, 5, 30)}>-</button>
                 <input type="number" value={breakTime} onChange={(e) => setBreakTime(Number(e.target.value))} min="1" max="30" />
-                <button className="adjust-button" onClick={() => adjustValue(setBreakTime, breakTime, 5, 5, 30)}>+</button>
+                <button className="adjust-button" onClick={() => adjustValue(setBreakTime, breakTime,  5, 5, 30)}>+</button>
               </div>
             </div>
 
@@ -363,7 +377,7 @@ const Timer = () => {
               <div className="input-with-buttons">
                 <button className="adjust-button" onClick={() => adjustValue(setRepeatCycles, repeatCycles, -1, 1, 10)}>-</button>
                 <input type="number" value={repeatCycles} onChange={(e) => setRepeatCycles(Number(e.target.value))} min="1" max="10" />
-                <button className="adjust-button" onClick={() => adjustValue(setRepeatCycles, repeatCycles, 1, 1, 10)}>+</button>
+                <button className="adjust-button" onClick={() => adjustValue(setRepeatCycles, repeatCycles,  1, 1, 10)}>+</button>
               </div>
             </div>
 

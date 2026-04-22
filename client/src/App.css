@@ -607,13 +607,17 @@ button:disabled {
 }
 
 /* ── TaskList — 진행률 바 ───────────────────────── */
-.task-progress-bar-wrap {
-  position: relative;
+.task-progress-wrap {
+  margin-bottom: 0.75rem;
+}
+
+/* overflow:hidden을 bar track에만 적용, label은 바깥에 */
+.task-progress-track {
   height: 0.45rem;
   background-color: var(--border-color);
   border-radius: 1rem;
-  margin-bottom: 0.9rem;
   overflow: hidden;
+  margin-bottom: 0.25rem;
 }
 
 .task-progress-bar {
@@ -624,9 +628,8 @@ button:disabled {
 }
 
 .task-progress-label {
-  position: absolute;
-  right: 0;
-  top: 0.6rem;
+  display: block;
+  text-align: right;
   font-size: 0.72rem;
   color: var(--text-color);
   opacity: 0.6;
