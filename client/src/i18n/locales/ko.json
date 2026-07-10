@@ -1,0 +1,79 @@
+{
+  "app": {
+    "seoTitle": "TimeTrack - 집중력과 생산성을 높이는 Pomodoro 타이머",
+    "seoDescription": "Pomodoro 타이머와 작업 관리로 집중력을 유지하고 생산성을 극대화하세요.",
+    "lightMode": "라이트 모드",
+    "darkMode": "다크 모드",
+    "loading": "불러오는 중...",
+    "langLabel": "언어 선택",
+    "switchToEn": "English로 전환",
+    "switchToKo": "한국어로 전환"
+  },
+  "timer": {
+    "start": "시작",
+    "restart": "재시작",
+    "pause": "일시정지",
+    "resume": "계속",
+    "reset": "초기화",
+    "setTime": "시간 설정",
+    "soundLabel": "배경음 선택",
+    "soundOff": "배경음 없음",
+    "soundWhite": "화이트노이즈",
+    "soundBrown": "브라운노이즈",
+    "statusFocus": "⏱ 집중 중 ({{current}}/{{total}})",
+    "statusBreak": "☕ 휴식 중 ({{current}}/{{total}})",
+    "todayFocus": "오늘 집중 {{value}}",
+    "cyclesCount": "{{count}}사이클",
+    "shortcutHint": "Space: 시작/일시정지 · R: 초기화",
+    "docFocus": "⏱ {{time}} 집중 중 — TimeTrack",
+    "docBreak": "☕ {{time}} 휴식 중 — TimeTrack",
+    "modalTitle": "시간 설정",
+    "focusMinutes": "집중 시간 (분):",
+    "breakMinutes": "휴식 시간 (분):",
+    "repeatCount": "반복 횟수:",
+    "save": "저장",
+    "close": "닫기"
+  },
+  "notif": {
+    "breakEndTitle": "휴식 종료! ⏱",
+    "breakEndBody": "다시 집중할 시간입니다.",
+    "allDoneTitle": "모든 사이클 완료! 🎉",
+    "allDoneBody": "총 {{count}}사이클을 마쳤습니다.",
+    "focusDoneTitle": "집중 완료! ☕",
+    "focusDoneBody": "{{minutes}}분 집중을 마쳤습니다. 잠깐 쉬어가세요."
+  },
+  "tasks": {
+    "placeholder": "할 일을 입력하세요 (N)",
+    "allDone": "🎉 모든 할 일 완료!",
+    "empty": "할 일이 없습니다.",
+    "progress": "{{done}} / {{total}} 완료",
+    "completedToggle": "완료된 항목 {{count}}개",
+    "clearCompleted": "완료 항목 전체 삭제"
+  },
+  "task": {
+    "ariaTask": "할 일: {{text}}",
+    "ariaDone": " (완료)",
+    "ariaFocusing": " (집중 중)",
+    "check": "완료 표시",
+    "focusStart": "이 할 일로 집중 시작",
+    "focusStop": "집중 해제",
+    "focusStartShort": "집중 시작",
+    "focusStopShort": "집중 해제",
+    "edit": "수정",
+    "save": "저장",
+    "delete": "삭제"
+  },
+  "history": {
+    "title": "최근 7일 집중",
+    "summary": "{{days}}일 · 총 {{hours}}h {{minutes}}m",
+    "ariaSection": "최근 7일 집중 기록",
+    "ariaChart": "최근 7일 중 {{days}}일 집중, 총 {{minutes}}분",
+    "empty": "아직 집중 기록이 없어요. 타이머를 시작해 보세요.",
+    "barTitle": "{{date}} · {{minutes}}분 · {{cycles}}사이클",
+    "weekdays": ["일", "월", "화", "수", "목", "금", "토"]
+  },
+  "units": {
+    "hourMin": "{{hours}}h {{minutes}}m",
+    "min": "{{minutes}}m"
+  }
+}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import Task from "./Task";
 import "../App.css";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
@@ -15,6 +16,7 @@ const loadTasks = () => {
 
 const TaskList = () => {
   const { activeTask, unfocusTask } = useAppContext();
+  const { t } = useTranslation();
   const [tasks, setTasks] = useState(loadTasks);
   const [input, setInput] = useState("");
   const [showCompleted, setShowCompleted] = useState(false);
@@ -90,7 +92,7 @@ const TaskList = () => {
           ref={inputRef}
           className="task-input"
           type="text"
-          placeholder="할 일을 입력하세요 (N)"
+          placeholder={t("tasks.placeholder")}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
@@ -116,7 +118,7 @@ const TaskList = () => {
             />
           </div>
           <span className="task-progress-label">
-            {completedTasks.length} / {tasks.length} 완료
+            {t("tasks.progress", { done: completedTasks.length, total: tasks.length })}
           </span>
         </div>
       )}
@@ -152,7 +154,7 @@ const TaskList = () => {
                 ))
               ) : (
                 <li className="task-empty">
-                  {completedTasks.length > 0 ? "🎉 모든 할 일 완료!" : "할 일이 없습니다."}
+                  {completedTasks.length > 0 ? t("tasks.allDone") : t("tasks.empty")}
                 </li>
               )}
               {provided.placeholder}
@@ -168,7 +170,7 @@ const TaskList = () => {
             className="toggle-completed-btn"
             onClick={() => setShowCompleted((v) => !v)}
           >
-            {showCompleted ? "▲" : "▼"} 완료된 항목 {completedTasks.length}개
+            {showCompleted ? "▲" : "▼"} {t("tasks.completedToggle", { count: completedTasks.length })}
           </button>
 
           {showCompleted && (
@@ -186,7 +188,7 @@ const TaskList = () => {
                 ))}
               </ul>
               <button className="clear-completed-btn" onClick={clearCompleted}>
-                완료 항목 전체 삭제
+                {t("tasks.clearCompleted")}
               </button>
             </>
           )}

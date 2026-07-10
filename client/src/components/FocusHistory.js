@@ -1,8 +1,7 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import "../App.css";
 import { useAppContext } from "../context/AppContext";
-
-const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
 // "YYYY-MM-DD" → 로컬 기준 요일 인덱스 (new Date(str)의 UTC 파싱 시프트 회피)
 const weekdayOf = (key) => {
@@ -12,6 +11,8 @@ const weekdayOf = (key) => {
 
 const FocusHistory = () => {
   const { recentStats } = useAppContext();
+  const { t } = useTranslation();
+  const weekdays = t("history.weekdays", { returnObjects: true });
 
   const maxMinutes = Math.max(1, ...recentStats.map((s) => s.focusMinutes));
   const totalMinutes = recentStats.reduce((sum, s) => sum + s.focusMinutes, 0);
@@ -19,19 +20,23 @@ const FocusHistory = () => {
   const hasData = totalMinutes > 0;
 
   return (
-    <section className="focus-history" aria-label="최근 7일 집중 기록">
+    <section className="focus-history" aria-label={t("history.ariaSection")}>
       <div className="focus-history-head">
-        <h2 className="focus-history-title">최근 7일 집중</h2>
+        <h2 className="focus-history-title">{t("history.title")}</h2>
         {hasData && (
           <span className="focus-history-sub">
-            {activeDays}일 · 총 {Math.floor(totalMinutes / 60)}h {totalMinutes % 60}m
+            {t("history.summary", {
+              days: activeDays,
+              hours: Math.floor(totalMinutes / 60),
+              minutes: totalMinutes % 60,
+            })}
           </span>
         )}
       </div>
 
       {hasData ? (
         <div className="focus-history-chart" role="img"
-             aria-label={`최근 7일 중 ${activeDays}일 집중, 총 ${totalMinutes}분`}>
+             aria-label={t("history.ariaChart", { days: activeDays, minutes: totalMinutes })}>
           {recentStats.map((s, i) => {
             const isToday = i === recentStats.length - 1;
             const heightPct = s.focusMinutes > 0
@@ -41,7 +46,7 @@ const FocusHistory = () => {
               <div
                 key={s.date}
                 className={`fh-col ${isToday ? "fh-col--today" : ""}`}
-                title={`${s.date} · ${s.focusMinutes}분 · ${s.cycles}사이클`}
+                title={t("history.barTitle", { date: s.date, minutes: s.focusMinutes, cycles: s.cycles })}
               >
                 <div className="fh-bar-track">
                   <div
@@ -49,13 +54,13 @@ const FocusHistory = () => {
                     style={{ height: `${heightPct}%` }}
                   />
                 </div>
-                <span className="fh-label">{WEEKDAYS[weekdayOf(s.date)]}</span>
+                <span className="fh-label">{weekdays[weekdayOf(s.date)]}</span>
               </div>
             );
           })}
         </div>
       ) : (
-        <p className="focus-history-empty">아직 집중 기록이 없어요. 타이머를 시작해 보세요.</p>
+        <p className="focus-history-empty">{t("history.empty")}</p>
       )}
     </section>
   );

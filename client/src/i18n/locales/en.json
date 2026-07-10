@@ -1,0 +1,79 @@
+{
+  "app": {
+    "seoTitle": "TimeTrack - Pomodoro Timer for Focus and Productivity",
+    "seoDescription": "Stay focused and maximize productivity with a Pomodoro timer and task management.",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode",
+    "loading": "Loading...",
+    "langLabel": "Select language",
+    "switchToEn": "Switch to English",
+    "switchToKo": "Switch to Korean"
+  },
+  "timer": {
+    "start": "Start",
+    "restart": "Restart",
+    "pause": "Pause",
+    "resume": "Resume",
+    "reset": "Reset",
+    "setTime": "Set time",
+    "soundLabel": "Select background sound",
+    "soundOff": "No sound",
+    "soundWhite": "White noise",
+    "soundBrown": "Brown noise",
+    "statusFocus": "⏱ Focusing ({{current}}/{{total}})",
+    "statusBreak": "☕ On break ({{current}}/{{total}})",
+    "todayFocus": "Today {{value}}",
+    "cyclesCount": "{{count}} cycles",
+    "shortcutHint": "Space: start/pause · R: reset",
+    "docFocus": "⏱ {{time}} focusing — TimeTrack",
+    "docBreak": "☕ {{time}} on break — TimeTrack",
+    "modalTitle": "Set time",
+    "focusMinutes": "Focus (min):",
+    "breakMinutes": "Break (min):",
+    "repeatCount": "Repeat:",
+    "save": "Save",
+    "close": "Close"
+  },
+  "notif": {
+    "breakEndTitle": "Break over! ⏱",
+    "breakEndBody": "Time to focus again.",
+    "allDoneTitle": "All cycles done! 🎉",
+    "allDoneBody": "Completed {{count}} cycles in total.",
+    "focusDoneTitle": "Focus done! ☕",
+    "focusDoneBody": "Finished {{minutes}} min of focus. Take a short break."
+  },
+  "tasks": {
+    "placeholder": "Add a task (N)",
+    "allDone": "🎉 All tasks done!",
+    "empty": "No tasks yet.",
+    "progress": "{{done}} / {{total}} done",
+    "completedToggle": "{{count}} completed",
+    "clearCompleted": "Clear all completed"
+  },
+  "task": {
+    "ariaTask": "Task: {{text}}",
+    "ariaDone": " (completed)",
+    "ariaFocusing": " (focusing)",
+    "check": "Mark done",
+    "focusStart": "Start focusing on this task",
+    "focusStop": "Stop focusing",
+    "focusStartShort": "Start focus",
+    "focusStopShort": "Stop focus",
+    "edit": "Edit",
+    "save": "Save",
+    "delete": "Delete"
+  },
+  "history": {
+    "title": "Last 7 days",
+    "summary": "{{days}} days · {{hours}}h {{minutes}}m total",
+    "ariaSection": "Focus record for the last 7 days",
+    "ariaChart": "Focused {{days}} of the last 7 days, {{minutes}} min total",
+    "empty": "No focus records yet. Start the timer.",
+    "barTitle": "{{date}} · {{minutes}} min · {{cycles}} cycles",
+    "weekdays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+  },
+  "units": {
+    "hourMin": "{{hours}}h {{minutes}}m",
+    "min": "{{minutes}}m"
+  }
+}

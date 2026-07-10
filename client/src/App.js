@@ -1,4 +1,5 @@
 import React, { lazy, Suspense } from "react";
+import { useTranslation } from "react-i18next";
 import logo from "./logo.svg";
 import "./App.css";
 
@@ -11,12 +12,16 @@ const TaskList = lazy(() => import("./components/TaskList"));
 
 function AppContent() {
   const { darkMode, toggleDarkMode } = useAppContext();
+  const { t, i18n } = useTranslation();
+
+  const isKo = i18n.resolvedLanguage === "ko";
+  const toggleLang = () => i18n.changeLanguage(isKo ? "en" : "ko");
 
   return (
     <>
       <SEO
-        title="TimeTrack - 집중력과 생산성을 높이는 Pomodoro 타이머"
-        description="Pomodoro 타이머와 작업 관리로 집중력을 유지하고 생산성을 극대화하세요."
+        title={t("app.seoTitle")}
+        description={t("app.seoDescription")}
         keywords={[
           "Pomodoro Timer",
           "Online Pomodoro Timer",
@@ -40,13 +45,23 @@ function AppContent() {
             <img src={logo} alt="TimeTrack Logo" className="logo" />
             <h1>TimeTrack</h1>
           </div>
-          <button className="toggle-button" onClick={toggleDarkMode}>
-            {darkMode ? "라이트 모드" : "다크 모드"}
-          </button>
+          <div className="header-actions">
+            <button
+              className="lang-button"
+              onClick={toggleLang}
+              aria-label={isKo ? t("app.switchToEn") : t("app.switchToKo")}
+              title={isKo ? t("app.switchToEn") : t("app.switchToKo")}
+            >
+              {isKo ? "EN" : "한"}
+            </button>
+            <button className="toggle-button" onClick={toggleDarkMode}>
+              {darkMode ? t("app.lightMode") : t("app.darkMode")}
+            </button>
+          </div>
         </header>
         <main className="main-content">
           <Timer />
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={<div>{t("app.loading")}</div>}>
             <TaskList />
           </Suspense>
         </main>

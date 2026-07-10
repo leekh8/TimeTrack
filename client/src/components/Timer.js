@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { FaClock, FaRecycle, FaBed, FaVolumeUp, FaVolumeMute } from "react-icons/fa";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
@@ -74,6 +75,8 @@ const Timer = () => {
     recordFocusCycle,
     registerTimerControl,
   } = useAppContext();
+
+  const { t } = useTranslation();
 
   const saved = loadSettings();
   const [focusTime, setFocusTime]       = useState(saved.focusTime);
@@ -177,11 +180,12 @@ const Timer = () => {
     }
     const mm = Math.floor(time / 60);
     const ss = String(time % 60).padStart(2, "0");
+    const clock = `${mm}:${ss}`;
     document.title = isBreak
-      ? `☕ ${mm}:${ss} 휴식 중 — TimeTrack`
-      : `⏱ ${mm}:${ss} 집중 중 — TimeTrack`;
+      ? t("timer.docBreak", { time: clock })
+      : t("timer.docFocus", { time: clock });
     return () => { document.title = "TimeTrack"; };
-  }, [time, isActive, isBreak]);
+  }, [time, isActive, isBreak, t]);
 
   // ── 남은 시간 = 마감시각 − 현재시각 (벽시계 기준) ──
   // setInterval 카운트다운(prev-1)은 백그라운드 탭에서 스로틀링(최대 1분에 1회)되어
@@ -226,11 +230,11 @@ const Timer = () => {
       setIsBreak(false);
       setCurrentCycle((c) => c + 1);
       setTime(ft * 60);
-      sendNotif("휴식 종료! ⏱", "다시 집중할 시간입니다.");
+      sendNotif(t("notif.breakEndTitle"), t("notif.breakEndBody"));
     } else if (cc >= rc - 1) {
       // Bug 3 수정: 모든 사이클 완료 → activeTask도 해제
       recordFocusCycle(ft);
-      sendNotif("모든 사이클 완료! 🎉", `총 ${rc}사이클을 마쳤습니다.`);
+      sendNotif(t("notif.allDoneTitle"), t("notif.allDoneBody", { count: rc }));
       setIsActive(false);
       setIsPaused(false);
       setIsBreak(false);
@@ -240,11 +244,11 @@ const Timer = () => {
     } else {
       // 집중 종료 → 휴식 시작
       recordFocusCycle(ft);
-      sendNotif("집중 완료! ☕", `${ft}분 집중을 마쳤습니다. 잠깐 쉬어가세요.`);
+      sendNotif(t("notif.focusDoneTitle"), t("notif.focusDoneBody", { minutes: ft }));
       setIsBreak(true);
       setTime(bt * 60);
     }
-  }, [time, isActive, recordFocusCycle, setActiveTask]);
+  }, [time, isActive, recordFocusCycle, setActiveTask, t]);
 
   // ── 배경음 재생/정지 ─────────────────────────────────
   useEffect(() => {
@@ -334,20 +338,20 @@ const Timer = () => {
       {isActive && (
         <p className="timer-status">
           {isBreak
-            ? `☕ 휴식 중 (${currentCycle}/${repeatCycles})`
-            : `⏱ 집중 중 (${currentCycle + 1}/${repeatCycles})`}
+            ? t("timer.statusBreak", { current: currentCycle, total: repeatCycles })
+            : t("timer.statusFocus", { current: currentCycle + 1, total: repeatCycles })}
         </p>
       )}
 
       <div className="timer-controls">
         <button className="start-button" onClick={startTimer}>
-          {isActive ? "재시작" : "시작"}
+          {isActive ? t("timer.restart") : t("timer.start")}
         </button>
         <button className="pause-button" onClick={pauseTimer} disabled={!isActive}>
-          {isPaused ? "계속" : "일시정지"}
+          {isPaused ? t("timer.resume") : t("timer.pause")}
         </button>
-        <button className="reset-button" onClick={resetTimer}>초기화</button>
-        <button className="set-time-button" onClick={openModal}>시간 설정</button>
+        <button className="reset-button" onClick={resetTimer}>{t("timer.reset")}</button>
+        <button className="set-time-button" onClick={openModal}>{t("timer.setTime")}</button>
       </div>
 
       <div className="sound-controls">
@@ -358,32 +362,32 @@ const Timer = () => {
           className="sound-select"
           value={soundMode}
           onChange={(e) => setSoundMode(e.target.value)}
-          aria-label="배경음 선택"
+          aria-label={t("timer.soundLabel")}
         >
-          <option value="off">배경음 없음</option>
-          <option value="white">화이트노이즈</option>
-          <option value="brown">브라운노이즈</option>
+          <option value="off">{t("timer.soundOff")}</option>
+          <option value="white">{t("timer.soundWhite")}</option>
+          <option value="brown">{t("timer.soundBrown")}</option>
         </select>
       </div>
 
       <div className="timer-stats">
-        <span>오늘 집중 {formatMins(todayStats.focusMinutes)}</span>
+        <span>{t("timer.todayFocus", { value: formatMins(todayStats.focusMinutes) })}</span>
         <span className="stats-sep">·</span>
-        <span>{todayStats.cycles}사이클</span>
+        <span>{t("timer.cyclesCount", { count: todayStats.cycles })}</span>
       </div>
 
-      <p className="shortcut-hint">Space: 시작/일시정지 · R: 초기화</p>
+      <p className="shortcut-hint">{t("timer.shortcutHint")}</p>
 
       {isModalOpen && (
         <div className="modal" onClick={handleOutsideClick}>
           <div className="modal-content">
             <div className="modal-header">
-              <h3>시간 설정</h3>
-              <button className="close-button" onClick={closeModal} aria-label="닫기">&#10007;</button>
+              <h3>{t("timer.modalTitle")}</h3>
+              <button className="close-button" onClick={closeModal} aria-label={t("timer.close")}>&#10007;</button>
             </div>
 
             <div className="modal-input">
-              <label><FaClock style={{ marginRight: "5px" }} />집중 시간 (분):</label>
+              <label><FaClock style={{ marginRight: "5px" }} />{t("timer.focusMinutes")}</label>
               <div className="input-with-buttons">
                 <button className="adjust-button" onClick={() => adjustValue(setFocusTime, focusTime, -5, 5, 60)}>-</button>
                 <input type="number" value={focusTime} onChange={(e) => setFocusTime(Number(e.target.value))} min="1" max="60" />
@@ -392,7 +396,7 @@ const Timer = () => {
             </div>
 
             <div className="modal-input">
-              <label><FaBed style={{ marginRight: "5px" }} />휴식 시간 (분):</label>
+              <label><FaBed style={{ marginRight: "5px" }} />{t("timer.breakMinutes")}</label>
               <div className="input-with-buttons">
                 <button className="adjust-button" onClick={() => adjustValue(setBreakTime, breakTime, -5, 5, 30)}>-</button>
                 <input type="number" value={breakTime} onChange={(e) => setBreakTime(Number(e.target.value))} min="1" max="30" />
@@ -401,7 +405,7 @@ const Timer = () => {
             </div>
 
             <div className="modal-input">
-              <label><FaRecycle style={{ marginRight: "5px" }} />반복 횟수:</label>
+              <label><FaRecycle style={{ marginRight: "5px" }} />{t("timer.repeatCount")}</label>
               <div className="input-with-buttons">
                 <button className="adjust-button" onClick={() => adjustValue(setRepeatCycles, repeatCycles, -1, 1, 10)}>-</button>
                 <input type="number" value={repeatCycles} onChange={(e) => setRepeatCycles(Number(e.target.value))} min="1" max="10" />
@@ -410,7 +414,7 @@ const Timer = () => {
             </div>
 
             <div className="modal-footer">
-              <button className="save-button" onClick={closeModal}>&#10003; 저장</button>
+              <button className="save-button" onClick={closeModal}>&#10003; {t("timer.save")}</button>
             </div>
           </div>
         </div>

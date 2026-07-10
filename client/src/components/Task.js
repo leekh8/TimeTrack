@@ -1,4 +1,5 @@
 import React, { useState, memo } from "react";
+import { useTranslation } from "react-i18next";
 import "../App.css";
 import { FiEdit, FiSave, FiTrash2 } from "react-icons/fi";
 import { FaPlay, FaStop } from "react-icons/fa";
@@ -6,6 +7,7 @@ import { useAppContext } from "../context/AppContext";
 
 const Task = memo(({ task, toggleTaskCompletion, updateTask, deleteTask }) => {
   const { activeTask, focusOnTask, unfocusTask } = useAppContext();
+  const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [newText, setNewText] = useState(task.text);
 
@@ -47,7 +49,7 @@ const Task = memo(({ task, toggleTaskCompletion, updateTask, deleteTask }) => {
       onKeyDown={(e) => {
         if (e.key === "Enter" && !isEditing) toggleTaskCompletion(task.id);
       }}
-      aria-label={`할 일: ${task.text}${task.completed ? " (완료)" : ""}${isActiveTask ? " (집중 중)" : ""}`}
+      aria-label={`${t("task.ariaTask", { text: task.text })}${task.completed ? t("task.ariaDone") : ""}${isActiveTask ? t("task.ariaFocusing") : ""}`}
     >
       <div className="task-checkbox">
         <input
@@ -55,7 +57,7 @@ const Task = memo(({ task, toggleTaskCompletion, updateTask, deleteTask }) => {
           checked={task.completed}
           onChange={() => toggleTaskCompletion(task.id)}
           onClick={(e) => e.stopPropagation()}
-          aria-label="완료 표시"
+          aria-label={t("task.check")}
         />
       </div>
 
@@ -83,8 +85,8 @@ const Task = memo(({ task, toggleTaskCompletion, updateTask, deleteTask }) => {
           <button
             className={`focus-button ${isActiveTask ? "focus-button--active" : ""}`}
             onClick={handleFocusToggle}
-            aria-label={isActiveTask ? "집중 해제" : "이 할 일로 집중 시작"}
-            title={isActiveTask ? "집중 해제" : "집중 시작"}
+            aria-label={isActiveTask ? t("task.focusStop") : t("task.focusStart")}
+            title={isActiveTask ? t("task.focusStopShort") : t("task.focusStartShort")}
           >
             {isActiveTask ? <FaStop size={13} /> : <FaPlay size={13} />}
           </button>
@@ -92,14 +94,14 @@ const Task = memo(({ task, toggleTaskCompletion, updateTask, deleteTask }) => {
         <button
           className="edit-button"
           onClick={handleEditToggle}
-          aria-label={isEditing ? "저장" : "수정"}
+          aria-label={isEditing ? t("task.save") : t("task.edit")}
         >
           {isEditing ? <FiSave size={16} /> : <FiEdit size={16} />}
         </button>
         <button
           className="delete-button"
           onClick={(e) => { e.stopPropagation(); deleteTask(task.id); }}
-          aria-label="삭제"
+          aria-label={t("task.delete")}
         >
           <FiTrash2 size={16} />
         </button>
