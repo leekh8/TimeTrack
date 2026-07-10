@@ -88,10 +88,17 @@ const Timer = () => {
   const [soundMode, setSoundMode]       = useState(
     () => localStorage.getItem("timetrack-sound") || "off"
   );
+  // 카운트다운 구간을 새로 무장(re-arm)하기 위한 세대 카운터 — 실행 중 재시작에도 마감시각 재설정
+  const [genId, setGenId] = useState(0);
 
   // 최신 상태를 ref로 노출 — interval/이벤트 핸들러의 stale closure 방지
   const stateRef = useRef({});
   stateRef.current = { isBreak, focusTime, breakTime, currentCycle, repeatCycles, isActive, isPaused };
+
+  // 벽시계 기반 카운트다운용 — 현재 표시 시간(ref)과 이번 구간의 마감시각
+  const timeRef = useRef(time);
+  timeRef.current = time;
+  const endAtRef = useRef(null);
 
   const audioCtxRef    = useRef(null);
   const noiseSourceRef = useRef(null);
@@ -117,6 +124,7 @@ const Timer = () => {
     setCurrentCycle(0);
     setIsActive(true);
     setIsPaused(false);
+    setGenId((g) => g + 1); // 실행 중 재시작이어도 마감시각 재무장 보장
   }, []);
 
   const pauseTimer = useCallback(() => {
@@ -175,14 +183,34 @@ const Timer = () => {
     return () => { document.title = "TimeTrack"; };
   }, [time, isActive, isBreak]);
 
-  // ── 1초 감소 — isActive/isPaused 변경 시에만 interval 재생성 ──
+  // ── 남은 시간 = 마감시각 − 현재시각 (벽시계 기준) ──
+  // setInterval 카운트다운(prev-1)은 백그라운드 탭에서 스로틀링(최대 1분에 1회)되어
+  // 25분 집중이 실제로는 훨씬 길어지는 드리프트가 생긴다. 카운트다운 구간이 시작될 때
+  // 마감시각(endAt)을 고정하고, 매 틱마다 Date.now()로 남은 시간을 재계산해 스로틀링·
+  // 절전에도 실제 경과가 반영되게 한다. 구간 경계(시작·재개·페이즈 전환·재시작)마다 재무장.
   useEffect(() => {
     if (!isActive || isPaused) return;
-    const interval = setInterval(() => {
-      setTime((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
+    endAtRef.current = Date.now() + timeRef.current * 1000;
+    const tick = () => {
+      const remaining = Math.max(0, Math.ceil((endAtRef.current - Date.now()) / 1000));
+      setTime(remaining);
+    };
+    tick(); // 즉시 1회 — 재개·탭 복귀 직후 스냅
+    const interval = setInterval(tick, 250);
     return () => clearInterval(interval);
-  }, [isActive, isPaused]);
+  }, [isActive, isPaused, isBreak, currentCycle, genId]);
+
+  // ── 탭 복귀 시 즉시 재동기화 (백그라운드에서 interval이 스로틀링됐어도) ──
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState !== "visible") return;
+      const { isActive: a, isPaused: p } = stateRef.current;
+      if (!a || p || endAtRef.current == null) return;
+      setTime(Math.max(0, Math.ceil((endAtRef.current - Date.now()) / 1000)));
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, []);
 
   // ── time === 0 → 페이즈 전환 ────────────────────────
   useEffect(() => {
