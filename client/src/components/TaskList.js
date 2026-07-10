@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Task from "./Task";
 import "../App.css";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { useAppContext } from "../context/AppContext";
 
 const loadTasks = () => {
   try {
@@ -13,6 +14,7 @@ const loadTasks = () => {
 };
 
 const TaskList = () => {
+  const { activeTask, unfocusTask } = useAppContext();
   const [tasks, setTasks] = useState(loadTasks);
   const [input, setInput] = useState("");
   const [showCompleted, setShowCompleted] = useState(false);
@@ -47,6 +49,7 @@ const TaskList = () => {
   };
 
   const toggleTaskCompletion = (id) => {
+    if (activeTask?.id === id) unfocusTask();
     setTasks((prev) =>
       prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
     );
