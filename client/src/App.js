@@ -4,6 +4,7 @@ import "./App.css";
 
 import SEO from "./components/SEO";
 import Timer from "./components/Timer";
+import FocusHistory from "./components/FocusHistory";
 import { AppProvider, useAppContext } from "./context/AppContext";
 
 const TaskList = lazy(() => import("./components/TaskList"));
@@ -29,7 +30,7 @@ function AppContent() {
           "타임트랙",
           "작업 관리",
         ]}
-        image="%PUBLIC_URL%/og-image.png"
+        image="https://time-track-psi.vercel.app/og-image.png"
         url="https://time-track-psi.vercel.app/"
       />
 
@@ -49,6 +50,7 @@ function AppContent() {
             <TaskList />
           </Suspense>
         </main>
+        <FocusHistory />
       </div>
     </>
   );

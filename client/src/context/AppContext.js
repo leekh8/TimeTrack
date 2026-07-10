@@ -1,15 +1,17 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
+import { getDayStats, buildRecentSeries, applyFocusCycle } from "../utils/stats";
 
 const AppContext = createContext(null);
 
-const getTodayKey = () => new Date().toISOString().split("T")[0];
+const STATS_KEY = "timetrack-stats";
+const HISTORY_DAYS = 7;
 
-const readTodayStats = () => {
+const readStats = () => {
   try {
-    const stats = JSON.parse(localStorage.getItem("timetrack-stats") || "[]");
-    return stats.find((s) => s.date === getTodayKey()) || { focusMinutes: 0, cycles: 0 };
+    const stats = JSON.parse(localStorage.getItem(STATS_KEY) || "[]");
+    return Array.isArray(stats) ? stats : [];
   } catch {
-    return { focusMinutes: 0, cycles: 0 };
+    return [];
   }
 };
 
@@ -18,7 +20,10 @@ export const AppProvider = ({ children }) => {
     () => localStorage.getItem("timetrack-darkmode") === "true"
   );
   const [activeTask, setActiveTask] = useState(null); // { id, text } | null
-  const [todayStats, setTodayStats] = useState(readTodayStats);
+  const [statsData, setStatsData] = useState(readStats); // 원본 배열 (오늘·히스토리 파생의 단일 소스)
+
+  const todayStats = getDayStats(statsData);
+  const recentStats = buildRecentSeries(statsData, HISTORY_DAYS);
 
   // Timer가 자신의 제어 함수를 여기에 등록
   // { start, reset, pauseIfActive } — Task/Context에서 직접 호출
@@ -47,24 +52,15 @@ export const AppProvider = ({ children }) => {
     timerControlRef.current.pauseIfActive?.();
   }, []);
 
-  // 집중 사이클 1회 완료 시 호출
+  // 집중 사이클 1회 완료 시 호출 — 함수형 업데이트로 최신 통계에 누적 (stale 방지)
   const recordFocusCycle = useCallback((focusMinutes) => {
-    const today = getTodayKey();
-    try {
-      const stats = JSON.parse(localStorage.getItem("timetrack-stats") || "[]");
-      const idx = stats.findIndex((s) => s.date === today);
-      if (idx >= 0) {
-        stats[idx].focusMinutes += focusMinutes;
-        stats[idx].cycles += 1;
-      } else {
-        stats.push({ date: today, focusMinutes, cycles: 1 });
-      }
-      const cutoff = new Date();
-      cutoff.setDate(cutoff.getDate() - 30);
-      const trimmed = stats.filter((s) => new Date(s.date) >= cutoff);
-      localStorage.setItem("timetrack-stats", JSON.stringify(trimmed));
-      setTodayStats(readTodayStats());
-    } catch {}
+    setStatsData((prev) => {
+      const next = applyFocusCycle(prev, focusMinutes);
+      try {
+        localStorage.setItem(STATS_KEY, JSON.stringify(next));
+      } catch {}
+      return next;
+    });
   }, []);
 
   return (
@@ -78,6 +74,7 @@ export const AppProvider = ({ children }) => {
         unfocusTask,
         registerTimerControl,
         todayStats,
+        recentStats,
         recordFocusCycle,
       }}
     >
