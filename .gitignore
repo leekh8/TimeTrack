@@ -548,4 +548,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# Claude Code local session dir
+.claude/
+
 # End of https://www.toptal.com/developers/gitignore/api/react,node,vs,git,windows
