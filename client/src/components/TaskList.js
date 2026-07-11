@@ -4,6 +4,7 @@ import Task from "./Task";
 import "../App.css";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { useAppContext } from "../context/AppContext";
+import { makeTaskId, reorderActiveTasks } from "../utils/tasks";
 
 const loadTasks = () => {
   try {
@@ -44,7 +45,7 @@ const TaskList = () => {
     if (input.trim()) {
       setTasks((prev) => [
         ...prev,
-        { id: `${Date.now()}`, text: input.trim(), completed: false },
+        { id: makeTaskId(), text: input.trim(), completed: false },
       ]);
       setInput("");
     }
@@ -73,12 +74,10 @@ const TaskList = () => {
 
   const handleOnDragEnd = (result) => {
     if (!result.destination) return;
-    // 미완료 항목만 드래그 가능
-    const active = tasks.filter((t) => !t.completed);
-    const completed = tasks.filter((t) => t.completed);
-    const [moved] = active.splice(result.source.index, 1);
-    active.splice(result.destination.index, 0, moved);
-    setTasks([...active, ...completed]);
+    // 미완료 항목만 드래그 가능 — 재정렬은 순수 헬퍼에 위임
+    setTasks((prev) =>
+      reorderActiveTasks(prev, result.source.index, result.destination.index)
+    );
   };
 
   const activeTasks = tasks.filter((t) => !t.completed);
