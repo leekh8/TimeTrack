@@ -1,7 +1,7 @@
 import React from "react";
 import { Helmet } from "react-helmet";
 
-const SEO = ({ title, description, lang = "en", keywords, image, url }) => {
+const SEO = ({ title, description, lang = "ko", keywords = [], image, url }) => {
   return (
     <Helmet>
       <html lang={lang} />

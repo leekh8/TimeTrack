@@ -20,6 +20,7 @@ function AppContent() {
   return (
     <>
       <SEO
+        lang={i18n.resolvedLanguage}
         title={t("app.seoTitle")}
         description={t("app.seoDescription")}
         keywords={[
