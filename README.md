@@ -85,6 +85,8 @@
 | 알림 | Notification API | 브라우저 표준, 설치 불필요 |
 | 국제화 | react-i18next | 런타임 ko/en 전환, 언어 감지 |
 | 영속성 | localStorage | 백엔드 없이 브라우저 단독 저장 |
+| 빌드·개발서버 | Vite 5 | esbuild 기반 빠른 HMR, 경량 번들 |
+| 테스트 | Vitest + Testing Library | Vite 통합 테스트 러너 |
 | 배포 | Vercel | GitHub 연동 CD, 무중단 배포 |
 
 ---
@@ -213,13 +215,12 @@ npm run build
 |---|---|
 | 다기기 동기화 미지원 | localStorage 단독 운용 — 기기 간 공유 불가 |
 | `react-beautiful-dnd` deprecated | 공식 지원 종료, 추후 `@hello-pangea/dnd` 교체 예정 |
-| `react-scripts` (CRA) deprecated | Vite 또는 Next.js 마이그레이션 검토 중 |
 
 ### 로드맵
 
 | 우선순위 | 항목 | 설명 |
 |---|---|---|
-| 🔴 단기 | CRA → Vite 마이그레이션 | 빌드 속도 개선, 최신 도구체인 |
+| 🔴 단기 | `react-beautiful-dnd` → `@hello-pangea/dnd` | 유지보수되는 포크로 교체 |
 | 🟡 중기 | 백엔드 + 사용자 인증 | DB 영속성 + JWT 로그인으로 다기기 동기화 |
 | 🟡 중기 | 주간/월간 통계 | 집중 패턴 시각화 차트 |
 | 🟢 장기 | PWA 전환 | 오프라인 지원, 앱 설치 |
@@ -244,6 +245,11 @@ npm run build
 **제거 (죽은 코드)**
 - 미연결 Express 서버(`server/`) 및 미사용 API 클라이언트(`client/src/api/tasks.js`) 삭제
   — 앱은 처음부터 localStorage 단독으로 동작했고 어느 쪽도 호출되지 않았음
+
+**개발 환경**
+- CRA(`react-scripts`) → **Vite 5** 마이그레이션 — 빌드·HMR 속도 개선, 설치 패키지 1381→262개
+- 테스트 러너 Jest → **Vitest** 전환 (기존 테스트 그대로 재사용, 21개 통과)
+- JSX 포함 파일을 `.jsx` 확장자로 정리, 출력 디렉토리는 `build/` 유지(배포 호환)
 
 ### v1.2.0 (2026-04-22) — 버그 수정 및 안정화
 
