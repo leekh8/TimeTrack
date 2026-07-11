@@ -8,29 +8,29 @@ React 18 기반 Pomodoro 타이머 + 할 일 관리 앱입니다.
 npm install
 npm start      # 개발 서버 → http://localhost:3000
 npm run build  # 프로덕션 빌드
+npm test       # 테스트 (Jest + Testing Library)
 ```
 
-## 환경 변수
-
-| 변수 | 기본값 | 설명 |
-|---|---|---|
-| `REACT_APP_API_URL` | `http://localhost:5000` | 백엔드 서버 주소 |
-
-`.env` 파일을 `client/` 디렉토리에 생성해 사용합니다. 설정하지 않아도 localStorage만으로 동작합니다.
+> 백엔드가 없어 localStorage만으로 완전히 동작합니다.
 
 ## 구조
 
 ```
 src/
-├── api/
-│   └── tasks.js          # 서버 API 클라이언트
 ├── components/
 │   ├── Timer.js           # Pomodoro 타이머 (배경음, 단축키, 통계, 알림 포함)
 │   ├── TaskList.js        # 할 일 목록 (드래그앤드롭, 완료 접기)
 │   ├── Task.js            # 개별 할 일 (수정, 삭제, 집중 시작)
+│   ├── FocusHistory.js    # 최근 7일 집중 히스토리 차트
 │   └── SEO.js             # 메타 태그
 ├── context/
-│   └── AppContext.js      # 전역 상태 (다크모드, activeTask, 오늘 통계)
+│   └── AppContext.js      # 전역 상태 (다크모드, activeTask, 오늘·최근 통계)
+├── utils/
+│   ├── stats.js           # 집중 통계 순수 헬퍼 (+ 테스트)
+│   └── tasks.js           # 할 일 id·재정렬 순수 헬퍼 (+ 테스트)
+├── i18n/
+│   ├── index.js           # react-i18next 초기화 (ko/en 감지·전환)
+│   └── locales/           # ko.json / en.json
 ├── App.js
 └── App.css
 ```
