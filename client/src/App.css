@@ -852,3 +852,65 @@ button:disabled {
   font-size: 0.9rem;
   opacity: 0.6;
 }
+
+/* ── 접근성 — 키보드 포커스 표시 (WCAG 2.4.7) ─────── */
+button:focus-visible,
+select:focus-visible,
+a:focus-visible,
+input:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--main-color);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* .task-input은 :focus에서 outline:none이라 동일 특이도로 재지정(뒤 소스 우선) */
+.task-input:focus-visible {
+  outline: 2px solid var(--main-color);
+  outline-offset: 2px;
+}
+
+/* 어두운 배경에서는 더 밝은 초록으로 대비 확보 */
+.App.dark-mode :focus-visible {
+  outline-color: #8ce68f;
+}
+
+/* ── 접근성 — 모션 축소 선호 존중 (WCAG 2.3.3) ─────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── 지연 로딩 폴백 (TaskList lazy) ───────────────── */
+.app-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 2rem 0;
+  opacity: 0.7;
+  font-size: 0.9rem;
+}
+
+.app-loading::before {
+  content: "";
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 2px solid var(--border-color);
+  border-top-color: var(--main-color);
+  border-radius: 50%;
+  animation: app-spin 0.8s linear infinite;
+}
+
+@keyframes app-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

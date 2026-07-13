@@ -62,7 +62,7 @@ function AppContent() {
         </header>
         <main className="main-content">
           <Timer />
-          <Suspense fallback={<div>{t("app.loading")}</div>}>
+          <Suspense fallback={<div className="app-loading">{t("app.loading")}</div>}>
             <TaskList />
           </Suspense>
         </main>

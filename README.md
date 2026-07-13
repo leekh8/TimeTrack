@@ -71,6 +71,7 @@
 | 반응형 레이아웃 | ✅ 완료 | 모바일·태블릿·데스크톱 |
 | SEO 메타 태그 | ✅ 완료 | Open Graph / Twitter Card / 언어별 canonical |
 | 구조화 데이터 | ✅ 완료 | JSON-LD `WebApplication` 스키마 (검색 리치 결과) |
+| 접근성 (a11y) | ✅ 완료 | 키보드 포커스 링(`:focus-visible`), 모션 축소 선호 존중 |
 
 ---
 
@@ -228,6 +229,14 @@ npm run build
 ---
 
 ## 9. 변경 이력
+
+### v1.6.0 (2026-07-13) — 접근성·UX 개선
+
+**개선**
+- **키보드 포커스 표시** — 전 인터랙션 요소에 `:focus-visible` 링 추가(다크 모드는 더 밝은 초록으로 대비 확보). 기존 `.task-input`의 `outline:none`으로 키보드 포커스가 안 보이던 문제(WCAG 2.4.7) 해소
+- **모션 축소 선호 존중** — `prefers-reduced-motion: reduce` 시 트랜지션·애니메이션 무력화(WCAG 2.3.3)
+- **지연 로딩 폴백 스타일** — `TaskList` lazy 로딩 중 맨 `<div>` → 스피너 UI(`.app-loading`)
+- 검증: dev 서버 라이브 확인 — 라이트/다크 포커스 링 육안 확인, reduced-motion 시 `transition-duration` 축소 확인, 21개 테스트·빌드 통과
 
 ### v1.5.0 (2026-07-13) — SEO 하드닝
 
