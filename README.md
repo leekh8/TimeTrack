@@ -79,7 +79,7 @@
 |---|---|---|
 | UI 프레임워크 | React 18 | 컴포넌트 단위 상태 관리, 생태계 |
 | 전역 상태 | Context API | 규모 대비 Redux 오버스펙, 다크모드·activeTask 공유 |
-| 드래그 앤 드롭 | react-beautiful-dnd | 선언적 API, 접근성 지원 |
+| 드래그 앤 드롭 | @hello-pangea/dnd | react-beautiful-dnd의 유지보수 포크, React 18 StrictMode 대응 |
 | 원형 프로그레스 | react-circular-progressbar | SVG 기반, 커스터마이징 용이 |
 | 오디오 | Web Audio API | 외부 의존성 없이 노이즈·비프음 생성 |
 | 알림 | Notification API | 브라우저 표준, 설치 불필요 |
@@ -214,13 +214,11 @@ npm run build
 | 항목 | 내용 |
 |---|---|
 | 다기기 동기화 미지원 | localStorage 단독 운용 — 기기 간 공유 불가 |
-| `react-beautiful-dnd` deprecated | 공식 지원 종료, 추후 `@hello-pangea/dnd` 교체 예정 |
 
 ### 로드맵
 
 | 우선순위 | 항목 | 설명 |
 |---|---|---|
-| 🔴 단기 | `react-beautiful-dnd` → `@hello-pangea/dnd` | 유지보수되는 포크로 교체 |
 | 🟡 중기 | 백엔드 + 사용자 인증 | DB 영속성 + JWT 로그인으로 다기기 동기화 |
 | 🟡 중기 | 주간/월간 통계 | 집중 패턴 시각화 차트 |
 | 🟢 장기 | PWA 전환 | 오프라인 지원, 앱 설치 |
@@ -229,6 +227,11 @@ npm run build
 ---
 
 ## 9. 변경 이력
+
+### v1.4.0 (2026-07-13) — 드래그앤드롭 라이브러리 교체
+
+**버그 수정**
+- `react-beautiful-dnd` → `@hello-pangea/dnd`(API 호환 포크)로 교체 — deprecated 라이브러리가 React 18 `StrictMode`에서 `Droppable` 미등록으로 **드래그가 동작하지 않던 문제** 해소. import 문자열·의존성만 교체(로직 무변경), 21개 테스트·프로덕션 빌드 통과
 
 ### v1.3.0 (2026-07-11) — 국제화·안정화 및 죽은 코드 제거
 

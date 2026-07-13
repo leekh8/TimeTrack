@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import Task from "./Task";
 import "../App.css";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { useAppContext } from "../context/AppContext";
 import { makeTaskId, reorderActiveTasks } from "../utils/tasks";
 
