@@ -69,7 +69,8 @@
 | 다크 모드 | ✅ 완료 | 설정 localStorage 저장 |
 | 키보드 단축키 | ✅ 완료 | Space / R / N |
 | 반응형 레이아웃 | ✅ 완료 | 모바일·태블릿·데스크톱 |
-| SEO 메타 태그 | ✅ 완료 | Open Graph / Twitter Card |
+| SEO 메타 태그 | ✅ 완료 | Open Graph / Twitter Card / 언어별 canonical |
+| 구조화 데이터 | ✅ 완료 | JSON-LD `WebApplication` 스키마 (검색 리치 결과) |
 
 ---
 
@@ -227,6 +228,17 @@ npm run build
 ---
 
 ## 9. 변경 이력
+
+### v1.5.0 (2026-07-13) — SEO 하드닝
+
+**개선**
+- **JSON-LD 구조화 데이터** 추가 — `WebApplication` 스키마(무료·생산성 카테고리·언어) 주입으로 검색 리치 결과 대응
+- **언어별 canonical** 추가 — `?lng=ko`/`?lng=en` 자기참조 정규 URL로 중복 URL 정규화, 언어 전환 시 동적 갱신
+- hreflang 체계를 canonical과 동일한 `?lng` 스킴으로 통일(`index.html`) — 정적/동적 신호 충돌 제거
+
+**의존성**
+- `react-helmet`(deprecated·미유지보수) → `react-helmet-async`로 교체 — React 18 `StrictMode` 하 `UNSAFE_componentWillMount` 경고 제거, head 주입 반응성 확보. `HelmetProvider`로 앱 래핑
+- 검증: dev 서버 라이브 확인 — canonical·JSON-LD·`<html lang>` 주입 및 언어 전환 시 동적 갱신 6/6 PASS, 21개 테스트·빌드 통과
 
 ### v1.4.0 (2026-07-13) — 드래그앤드롭 라이브러리 교체
 
