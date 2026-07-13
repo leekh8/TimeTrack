@@ -6,6 +6,8 @@
   --accent-hover-color: #e64a19;
   --reset-color: #ff9800;
   --reset-hover-color: #f57c00;
+  --secondary-color: #607d8b;
+  --secondary-hover-color: #455a64;
   --text-color: #333333;
   --background-color: #ffffff;
   --border-color: #dddddd;
@@ -58,6 +60,19 @@ body.dark-mode {
   background-color: #2a2a2a;
   color: var(--dark-text-color);
   border-color: #444;
+}
+
+/* 다크 모드 대비 보정 — text-color(#333) 변수가 다크에서 안 바뀌어
+   어두운 배경에 어두운 글씨로 묻히던 요소들 */
+.App.dark-mode .task-buttons button {
+  color: var(--dark-text-color);
+  border-color: #444;
+}
+
+.App.dark-mode .timer-stats,
+.App.dark-mode .shortcut-hint,
+.App.dark-mode .sound-icon {
+  color: var(--dark-text-color);
 }
 
 /* ── 헤더 ───────────────────────────────────────── */
@@ -185,17 +200,31 @@ button:disabled {
   margin: 0.3rem 0 0;
 }
 
+/* 주 액션 — 채운 초록 */
 .start-button { background-color: var(--main-color); }
 .start-button:hover { background-color: var(--main-hover-color); }
 
-.pause-button { background-color: var(--accent-color); }
-.pause-button:hover:not(:disabled) { background-color: var(--accent-hover-color); }
+/* 보조(비파괴) — 중립 슬레이트. 빨강은 위험 신호라 부적절해 제거 */
+.pause-button { background-color: var(--secondary-color); }
+.pause-button:hover:not(:disabled) { background-color: var(--secondary-hover-color); }
 
+/* 주의(진행 초기화) — 경고 주황 */
 .reset-button { background-color: var(--reset-color); }
 .reset-button:hover { background-color: var(--reset-hover-color); }
 
-.set-time-button { background-color: var(--main-color); }
-.set-time-button:hover { background-color: var(--main-hover-color); }
+/* 설정 성격 — 외곽선 보조로 주 액션과 구분(초록 중복 해소) */
+.set-time-button {
+  background-color: transparent;
+  color: var(--text-color);
+  border: 0.0625rem solid var(--border-color);
+  box-shadow: none;
+}
+.set-time-button:hover { background-color: rgba(0, 0, 0, 0.05); }
+.App.dark-mode .set-time-button {
+  color: var(--dark-text-color);
+  border-color: #444;
+}
+.App.dark-mode .set-time-button:hover { background-color: rgba(255, 255, 255, 0.08); }
 
 /* ── 모달 ────────────────────────────────────────── */
 .modal {
@@ -506,7 +535,7 @@ button:disabled {
 
 /* ── 반응형 — 태블릿 ────────────────────────────── */
 @media (max-width: 768px) {
-  html { font-size: 0.8rem; }
+  html { font-size: 0.9rem; }
 
   .main-content {
     flex-direction: column;
@@ -545,7 +574,7 @@ button:disabled {
 
 /* ── 반응형 — 소형 휴대폰 ──────────────────────── */
 @media (max-width: 480px) {
-  html { font-size: 0.6rem; }
+  html { font-size: 0.8rem; }
 
   .main-content {
     flex-direction: column;
